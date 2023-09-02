@@ -6,7 +6,9 @@ from send_mail import send_mail
 # Amount of times they we will try to generate the files 
 tries = 20
 is_generation_successful = False
+
 generate_files(0)
+
 for i in range(tries):
     try:
         generate_files(0)
@@ -14,7 +16,6 @@ for i in range(tries):
         break
     except:
         pass
-
 
 
 if is_generation_successful:
