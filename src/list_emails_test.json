@@ -1,14 +1,21 @@
 {
     "emails": [
         {            
-        "from" : "dummy_eurex@outlook.com",
-        "mailto" : ["barros.vinicius@aluno.unb.br","mrs.venios@gmail.com", "detlefd@gmx.net"],
+        "from" : "almeidabarrosdf@gmail.com",
+        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
         "condition": "always"
     },
-        {            
-        "from" : "dummy_eurex@outlook.com",
+    {            
+        "from" : "detlefd@gmx.net",
+        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com", "almeidabarrosdf@gmail.com"],
+        "subject" : "OI-Tabelle",
+        "text" : "dummy_msg.txt",
+        "condition": "always"
+    }, 
+    {            
+        "from" : "info@dieball.de",
         "mailto" : ["almeidabarrosdf@gmail.com"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
