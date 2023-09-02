@@ -28,7 +28,7 @@ src_css = os.path.join(src_path,"style.css")
 
 email_messages_path = os.path.join(src_path,"email_messages")
 
-list_emails_path = os.path.join(src_path,"list_emails_test.json")
+list_emails_path = os.path.join(src_path,"list_emails_test_Dieball.json")
 with open(list_emails_path) as file:
     list_emails = json.load(file)['emails']
 

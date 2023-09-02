@@ -1,17 +1,17 @@
 {
     "emails": [
         {            
-        "from" : "almeidabarrosdf@gmail.com",
-        "mailto" : ["barros.vinicius@aluno.unb.br","mrs.venios@gmail.com"],
+        "from" : "dummy_eurex@outlook.com",
+        "mailto" : ["barros.vinicius@aluno.unb.br","mrs.venios@gmail.com", "detlefd@gmx.net"],
         "subject" : "OI-Tabelle",
-        "text" : "dax-trader.txt",
+        "text" : "dummy_msg.txt",
         "condition": "always"
     },
         {            
-        "from" : "180028758@aluno.unb.br",
+        "from" : "dummy_eurex@outlook.com",
         "mailto" : ["almeidabarrosdf@gmail.com"],
         "subject" : "OI-Tabelle",
-        "text" : "dax-trader.txt",
+        "text" : "dummy_msg.txt",
         "condition": "always"
     }
     ]
