@@ -7,7 +7,6 @@ from send_mail import send_mail
 tries = 20
 is_generation_successful = False
 
-generate_files(0)
 
 for i in range(tries):
     try:
