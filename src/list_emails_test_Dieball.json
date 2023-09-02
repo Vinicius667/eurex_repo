@@ -1,0 +1,18 @@
+{
+    "emails": [
+        {            
+        "from" : "almeidabarrosdf@gmail.com",
+        "mailto" : ["barros.vinicius@aluno.unb.br","mrs.venios@gmail.com"],
+        "subject" : "OI-Tabelle",
+        "text" : "dax-trader.txt",
+        "condition": "always"
+    },
+        {            
+        "from" : "180028758@aluno.unb.br",
+        "mailto" : ["almeidabarrosdf@gmail.com"],
+        "subject" : "OI-Tabelle",
+        "text" : "dax-trader.txt",
+        "condition": "always"
+    }
+    ]
+}

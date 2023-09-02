@@ -1,0 +1,6 @@
+numpy==1.25.2
+scipy==1.11.2
+pandas==2.0.3
+plotly==5.16.1
+pyhtml2pdf==0.0.7
+kaleido==0.2.1

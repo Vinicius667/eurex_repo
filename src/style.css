@@ -1,0 +1,269 @@
+/* -- Set printing size as A4 */
+
+@page{
+    size: A4; 
+    margin: 1cm;
+}
+
+/* By default, all elements will have this configuration */
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+    }
+
+
+/* Set page size as A4*/
+body{
+    width: 210mm;
+    height: 297mm;
+
+}
+
+/* Main should ocuppy the whole page*/
+main{
+    width: 100%;
+    height: 100%;    
+    margin-top: 0%;
+}
+
+#header{
+    display: flex;
+    flex-direction: column;
+    height: 12%;
+    justify-content: space-between;
+}
+
+#text_and_date{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#date{
+    text-align: center;
+    font-size: 20px;
+    font-weight: bolder;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.big_small_text{
+    text-align: center;
+    box-sizing: border-box;
+    border: 10px;
+}
+
+.smaller_text{
+    font-size: 14px;
+}
+
+.bigger_text{
+    text-align: center;
+    font-size: 18px;
+    font-weight: bolder;
+
+}
+
+
+
+#tage_delta{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    box-sizing: border-box;
+    
+}
+
+#tage{
+    display: flex;
+    flex-direction: row;
+    width: 40%;
+    align-items: center;
+    justify-content: space-around;
+
+}
+
+#delta{
+    display: flex;
+    flex-direction: row;
+    width: 40%;
+    align-items: center;
+    justify-content: space-around;
+
+}
+
+#tage_text{
+    display: flex;
+    justify-content: space-between;
+
+}
+
+#tage_value{
+    display: flex;
+
+    background-color: cadetblue;
+    
+    width: 15%;
+    align-items: center;
+    justify-content: space-around;
+}
+
+#delta_text{
+    display: flex;
+    justify-content: space-between;
+
+}
+
+#delta_value{
+    display: flex;
+    background-color: powderblue;
+    
+    width: 15%;
+    align-items: center;
+    justify-content: space-around;
+}
+
+
+#title{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    
+
+}
+
+#svg_image{
+    display: flex;
+    justify-content: center;
+}
+
+#future{
+    background-color: cornflowerblue;
+}
+
+#disclaimer{
+    text-align: center;
+    font-size: 11px;
+}
+
+#bellow_image{
+    width: 100%;
+    height: 14.5%;
+    display: flex;
+    flex-direction: column;
+
+}
+
+#legend_info_name{
+    height: 35%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#legend_info{
+    width: 58.5%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10px;
+}
+
+#legend{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 3;
+}
+
+
+#legend0{
+    display: flex;
+    width: 33.5%;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+}
+
+#große{
+    text-align: center;
+    font-size: 10px;
+}
+
+
+/* This is used in #legend0*/
+#yellow_block{
+    height: 30%;
+    width: 20%;
+    background-color: yellow;
+}
+
+
+#legend1{
+    display: flex;
+    width: 33.5%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 10px;
+}
+
+#legend2{
+    display: flex;
+    width: 32%;
+    
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 10px;
+}
+
+.sum{
+    font-size: 11px;
+    font-weight: bold;
+}
+
+#sum_contracts{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#gamma_short{
+    background-color: rgb(77, 166, 255);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-grow: 1;
+}
+#gamma_long{
+    background-color: rgb(0, 204, 204);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-grow: 1; 
+}
+
+#name{
+    flex-grow: 1;
+    text-align: center;    
+}
+
+#info{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-size: 10px;
+    font-weight: 500;
+    flex-grow: 1;
+
+}

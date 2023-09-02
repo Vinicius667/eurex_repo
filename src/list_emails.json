@@ -1,0 +1,43 @@
+{
+    "emails": [THIS TEXT PREVENTS THIS FILE FROM BE USED ACCIDENTALLY
+        {            
+        "from" : "info@dieball.de",
+        "mailto" : ["dax-trader@t-online.de"],
+        "subject" : "OI-Tabelle",
+        "text" : "dax-trader.txt",
+        "condition_to_send": "always"
+    },
+    {
+        "from" : "detlefd@gmx.net",
+        "mailto" : [
+            "egialouris@minotauruscapital.com", "alexmais04@gmail.com",
+            "alexmais04@gmail.com", "plika@minotauruscapital.com"
+        ],
+        "subject" : "OI-Tabelle",
+        "text" : "minotaurus_capital.txt",
+        "condition_to_send": "always"
+    },
+    {
+        "from" : "info@dieball.de",
+        "mailto" : ["tobias_marciniak@web.de"],
+        "subject" : "OI-Tabelle",
+        "text" : "tobias.txt",
+        "condition_to_send": "always"
+    },
+
+    {
+        "from" : "info@dieball.de",
+        "mailto" : ["anh.tranquoc@gmx.de"],
+        "subject" : "STOXX_OI-Tabelle",
+        "text" : "anh_tranquoc.txt",
+        "condition_to_send": "always"
+    },
+    {
+        "from" : "info@dieball.de",
+        "mailto" : ["kid-trading@gmx.de"],
+        "subject" : "OI-Tabelle",
+        "text" : "kid_trading.txt",
+        "condition_to_send": "name_of_condition"
+    }
+    ]
+}

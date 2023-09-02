@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>EUREX</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <main>
+        <div id = "header">
+            <div id="text_and_date"> 
+                <div class = "big_small_text">
+                    <div class = "bigger_text">
+                        OpenInterest und HedgeBedarf
+                    </div>
+                    <div class = "smaller_text">
+                        basierend auf Daten von der EUREX <br>
+                        (http://www.eurexchange.com/exchange-de/disclaimer)
+                    </div>
+                </div>
+                <div id="date">
+                        $DATE$
+                </div>
+            </div>
+            <div id= "tage_delta">
+                <div id = "tage">
+                    <div id = "tage_text">Tage bis Verfall</div>
+                    <div id = "tage_value">$TBF$</div>
+                </div> 
+        
+                <div id = "delta">
+                    <div id = "delta_text">Delta</div>
+                    <div id = "delta_value">$DELTA$</div>
+                </div>
+            </div> 
+        
+            <div class = "big_small_text" id = "future">
+                <div class = "bigger_text">
+                    Future-Hedgebedarf für Überhänge der Optionen
+                </div>
+                <div class = "smaller_text">
+                    (Überhang/5)*delta
+                </div>
+            </div>
+        </div>
+        
+        <div id = "svg_image">
+            <img src="image.svg" style="width:100%">
+        </div>
+        
+        <div id = "bellow_image">
+            <div id = "legend_info_name">
+            <div id = "legend_info">
+                <div id = "legend">
+                    <div id = "legend0">
+                        <div id = "yellow_block"></div>
+                        <div id = "große"> große (fast) ausgeglichene Optionsposition</div>
+                    </div>
+                    <div id = "legend1">
+                        <div id = "gamma_long">Gamma long (Put long Überhänge)</div>
+                        <div id = "gamma_short">Gamma short (Call short Überhänge)</div>
+                    </div>
+                    <div id = "legend2">
+                        <div id = "sum_contracts">
+                            <div class="sum">$PUT_SUM$</div>
+                            <div class="sum">$CALL_SUM$</div>
+                        </div>
+                        <div id = "legend_sum">
+                            Options-kontrakte gesamt
+                        </div>
+                    </div>
+                </div>
+                <div id = info>
+                    * Nur Front-Monat betrachtet für den aktuellen und den letzten Handelstag
+                </div>
+            </div>
+            <div id = name>
+                <br>
+                © Detlef Dieball
+            </div>
+        </div>
+            <div id="disclaimer">
+                <br>
+                Disclaimer / Haftungsausschluss <br>
+                Diese Unterlage ist nach bestem Wissen und Gewissen sorgfälltig erstellt.<br>
+                Alle Ausführungen dieser Unterlage dienen zu Informations- und Lernzwecken. Sie stellen in keinem Falle eine Aufforderung zum Handel mit den erwähnten Trading-lnstrumenten dar. <br>
+                Eine Haftung ist ausgeschlossen.
+                Der Handel an den Finanzmärkten birgt das Risiko des Totalverlusts, möglicherweise über das eingesetzte Kapital hinaus. Handelsentscheidungen treffen die Händler eigenverantwortlich. Jede Haftung oder Verantwortung wird  abgelehnt.<br>
+                Durch Verwenden dieser Unterlage gilt dieser Disclaimer als akzeptiert.
+            </div>
+        </div>
+
+    </main>
+
+    
+    
+
+  </body>
+</html

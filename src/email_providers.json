@@ -1,0 +1,25 @@
+{
+    "providers" :
+        {
+            "outlook" :    
+            {
+                "smtp" :
+                {
+                "server" : "smtp-mail.outlook.com",
+                "port" : 587,
+                "alter_port" : 25,
+                "comment" : "587 with TLS and 25 without TLS/SSL"
+                }
+            },
+            "gmail" :    
+            {
+                "smtp" :
+                {
+                "server" : "smtp.gmail.com",
+                "port" : 587,
+                "alter_port" : 25,
+                "comment" : "587 with TLS and 465 with SSL"
+                }
+            }
+        }
+}
