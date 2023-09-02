@@ -2,7 +2,8 @@ import os
 import numpy as np
 import pandas as pd
 from typing import List
-import win32com.client as client
+import json
+from datetime import datetime
 
 
 def create_folder(path):
@@ -44,41 +45,3 @@ def posneg_gradient(col:pd.Series):
     return  np.array([f"rgb({aux.loc[i,'r']},{aux.loc[i,'g']},{aux.loc[i,'b']})" for i in range(aux.shape[0]) ])
 
 #################################################################################################
-
-def check_emails_available_outlook(outlook:client.CDispatch,list_emails:list)->bool:
-    return_error = False
-    list_emails_error = []
-    for email in list_emails:
-        if not outlook.Session.Accounts[email]:
-            return_error = True
-            list_emails_error.append(email)
-
-    if return_error:
-        print("E-mails not available:")
-        for email in list_emails_error:
-            print(email)
-        raise ValueError(f"E-mails are not available on outlook.")
-
-    return True
-
-
-if __name__ == "__main__":
-    # construct Outlook application instance
-    print("running")
-    outlook = client.Dispatch('Outlook.Application')
-
-    if check_emails_available_outlook(outlook, [email['from'] for email in list_emails]):
-        print("All e-mails to send from are available on the outlook session.")
-
-    for email in list_emails:
-        account = outlook.Session.Accounts[email['from']]
-        # construct the email item object
-        message = outlook.CreateItem(0)
-        message.Subject = email['subject']
-        message.Body = open(os.path.join(email_messages_path,email['text']),encoding="UTF-8").read()
-        message.To = ";".join(email['mailto'])
-        message._oleobj_.Invoke(*(64209, 0, 8, 0, account))
-        message.Attachments.Add(os.path.join(os.getcwd(), 'requirements.txt'))
-        #message.Display()
-        message.Save()
-        message.Send()
