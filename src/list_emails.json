@@ -30,14 +30,14 @@
         "mailto" : ["anh.tranquoc@gmx.de"],
         "subject" : "STOXX_OI-Tabelle",
         "text" : "anh_tranquoc.txt",
-        "condition_to_send": "always"
+        "condition_to_send": "name_of_condition"
     },
     {
         "from" : "info@dieball.de",
         "mailto" : ["kid-trading@gmx.de"],
         "subject" : "OI-Tabelle",
         "text" : "kid_trading.txt",
-        "condition_to_send": "name_of_condition"
-    }
+        "condition_to_send": "always"
+        }
     ]
 }
