@@ -51,7 +51,6 @@ def get_finazen_price(stock_idx)->float:
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'
     }
-
     response = requests.get('https://www.finanzen.net/index/' + stock, headers=headers)
     html = BeautifulSoup(response.content, 'html.parser')
     aux = BeautifulSoup.findAll(html,id = 'snapshot-value-fst-current-0')[0].span.get_text()
@@ -217,15 +216,14 @@ def generate_files(heute: Union[None, str] = None)->None:
             stock_price = stocks_df.loc[stocks_df['Indices GER'] == "L&S DAX","Price"].values[0]
             Spannweite = 2000
             Schritt = 50
-            VDAX_Laufzeit = 60
+            volatility_Laufzeit = 60
 
         else:
             stocks_df = stocks[1]
             stock_price = stocks_df.loc[stocks_df['Indices EU / USA / INT'] == "CITI Euro Stoxx 50","Price"].values[0]
             Spannweite = 700
             Schritt = 25
-            # ASK: VDAX for both?
-            VDAX_Laufzeit = 365
+            volatility_Laufzeit = 365
 
         span = (Spannweite/4)
         ZentralKurs = round(stock_price/span)*span
@@ -249,7 +247,7 @@ def generate_files(heute: Union[None, str] = None)->None:
         print(f"Maxkurs = {Maxkurs}")
         print(f"Schritte = {Schritte}")
         print(f"ZentralKurs = {ZentralKurs}")
-        print(f"VDAX_Laufzeit = {VDAX_Laufzeit}")
+        print(f"volatility_Laufzeit = {volatility_Laufzeit}")
 
 
         # Second stage
@@ -318,8 +316,11 @@ def generate_files(heute: Union[None, str] = None)->None:
         SchrittWeite = 10
         InterestRate = get_euribor_3m()
 
-        # ASK: Is VDAX used for both? Should it be divided by 100
-        VDAX = get_finazen_price(auswahl)/100
+
+        volatility = get_finazen_price(auswahl)/100
+
+        print(f"volatility = {volatility}")
+        print(f"InterestRate = {InterestRate}")
 
         Tage = tage_bis_verfall
         if Tage == 0:
@@ -343,8 +344,8 @@ def generate_files(heute: Union[None, str] = None)->None:
                 Kurs = Maxkurs - i * SchrittWeite
                 # In python np.log = natural log
                 h1 = np.log(Kurs / Basis_value)
-                sigma = VDAX * ((Tage / VDAX_Laufzeit) ** 0.5)
-                sigma_1 = VDAX * ((Tage_1 / VDAX_Laufzeit) ** 0.5)
+                sigma = volatility * ((Tage / volatility_Laufzeit) ** 0.5)
+                sigma_1 = volatility * ((Tage_1 / volatility_Laufzeit) ** 0.5)
                 h2 = InterestRate + sigma * sigma / 2
                 h2_1 = InterestRate + sigma_1 * sigma_1 / 2
                 d1 = (h1 + (h2 * (Tage / 365))) / (sigma * ((Tage / 365) ** 0.5))
@@ -390,6 +391,7 @@ def generate_files(heute: Union[None, str] = None)->None:
             'DetailMin': DetailMin,
             'DetailMax': DetailMax,
             'delta' : delta,
+            'volatility' : volatility
         }).T.reset_index().rename(columns={0:"Value", 'index': "Info"})
 
 
