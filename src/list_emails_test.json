@@ -2,24 +2,66 @@
     "emails": [
         {            
         "from" : "almeidabarrosdf@gmail.com",
+        "mailto" : ["MyTest20230902@outlook.de"],
+        "subject" : "OI-Tabelle",
+        "text" : "dummy_msg.txt",
+        "condition": "always",
+        "id" : 1,
+        "index" : "DAX"
+    },
+    {            
+        "from" : "almeidabarrosdf@gmail.com",
+        "mailto" : ["dummy_eurex@outlook.com"],
+        "subject" : "OI-Tabelle",
+        "text" : "dummy_msg.txt",
+        "condition": "always",
+        "id" : 2,
+        "index" : "STOXX"
+    },
+    {            
+        "from" : "almeidabarrosdf@gmail.com",
         "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
-        "condition": "always"
+        "condition": "tage_bis_verfall<=5",
+        "id" : 3,
+        "index" : "DAX"
+    },
+    {            
+        "from" : "almeidabarrosdf@gmail.com",
+        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com"],
+        "subject" : "OI-Tabelle",
+        "text" : "dummy_msg.txt",
+        "condition": "tage_bis_verfall<=5",
+        "id" : 4,
+        "index" : "STOXX"
+    },
+    {            
+        "from" : "almeidabarrosdf@gmail.com",
+        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com"],
+        "subject" : "OI-Tabelle",
+        "text" : "dummy_msg.txt",
+        "condition": "always",
+        "id" : 5,
+        "index" : "STOXX"
     },
     {            
         "from" : "detlefd@gmx.net",
         "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com", "almeidabarrosdf@gmail.com"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
-        "condition": "always"
+        "condition": "always",
+        "id" : -1,
+        "index" : "DAX"
     }, 
     {            
         "from" : "info@dieball.de",
         "mailto" : ["almeidabarrosdf@gmail.com"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
-        "condition": "always"
+        "condition": "always",
+        "id" : -2,
+        "index" : "STOXX"
     }
     ]
 }

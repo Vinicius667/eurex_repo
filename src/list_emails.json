@@ -30,7 +30,7 @@
         "mailto" : ["anh.tranquoc@gmx.de"],
         "subject" : "STOXX_OI-Tabelle",
         "text" : "anh_tranquoc.txt",
-        "condition_to_send": "name_of_condition"
+        "condition_to_send": "tage_bis_verfall<=5"
     },
     {
         "from" : "info@dieball.de",

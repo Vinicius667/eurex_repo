@@ -2,12 +2,7 @@ import os
 from datetime import datetime
 import json
 
-# User defined values
 
-Spannweite = 2000
-ZentralKurs = 16500
-Schritt = 50
-DetailSchritte = 20
 
 auswahl_dict = {
         0 : "DAX",
@@ -42,17 +37,7 @@ with open(list_creditials_path) as file:
     list_credentials = json.load(file)['credentials']
 
 
-# Results files
-list_pdf_files = [
-    os.path.join(current_results_path, "eurex.pdf"),
-    os.path.join(old_results_path, f"eurex_{datetime.today().strftime('%Y_%m_%d')}.pdf")
-]
-    
-list_excel_files = [
-    os.path.join(current_results_path, "eurex.xlsx"),
-    os.path.join(old_results_path, f"eurex_{datetime.today().strftime('%Y_%m_%d')}.xlsx")
-]
-
 result_html = os.path.join(current_results_path,"eurex.html")
 result_css = os.path.join(current_results_path,"style.css")
 result_image = os.path.join(current_results_path,"image.svg")
+
