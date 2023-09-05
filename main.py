@@ -5,10 +5,24 @@ from send_mail import send_mail
 # Amount of times they we will try to generate the files 
 
 
-list_email_send = generate_files(heute= None)
+
+generate_parquets(heute= None)
+
+
+list_email_send = read_pickle(os.path.join(temp_results_path, f'list_email_send.pickle'))
+list_options = []
+for email in list_emails:
+    if email['id'] in list_email_send:
+        list_options.append(dict_stock_index[email['index']])
+list_options = set(list_options)
+
+print(f"list_options = {list_options}")
+
+for option in list_options:
+    generate_pdfs(option)
+
 
 print(f"list_email_send = {list_email_send}")
-
 outlook = client.Dispatch('Outlook.Application')
 for email in list_emails:
     if check_emails_available_outlook(outlook, email['from']):

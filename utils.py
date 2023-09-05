@@ -4,7 +4,7 @@ import pandas as pd
 from typing import List
 import json
 from datetime import datetime
-
+import pickle
 
 def create_folder(path):
     # Create a foder in case it has not been created already
@@ -45,3 +45,12 @@ def posneg_gradient(col:pd.Series):
     return  np.array([f"rgb({aux.loc[i,'r']},{aux.loc[i,'g']},{aux.loc[i,'b']})" for i in range(aux.shape[0]) ])
 
 #################################################################################################
+
+def save_as_pickle(variable, path):
+    with open(path, 'wb') as handle:
+        pickle.dump(variable, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+def read_pickle(path):
+    with open(path, 'rb') as handle:
+        variable = pickle.load(handle)
+        return variable

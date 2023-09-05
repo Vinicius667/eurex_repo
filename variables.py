@@ -3,11 +3,14 @@ from datetime import datetime
 import json
 
 
+save_files_to_debug = True
 
-auswahl_dict = {
+dict_index_stock = {
         0 : "DAX",
         1 : "STOXX"
     }
+
+dict_stock_index = {v: k for k, v in dict_index_stock.items()}
 
 # Folders where results will be stored
 current_results_path = "./Results"
