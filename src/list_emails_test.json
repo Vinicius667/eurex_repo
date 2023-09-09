@@ -2,7 +2,7 @@
     "emails": [
         {            
         "from" : "almeidabarrosdf@gmail.com",
-        "mailto" : ["MyTest20230902@outlook.de"],
+        "mailto" : ["MyTest20230902@outlook.de", "detlefd@gmx.net"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
         "condition": "always",
@@ -11,7 +11,7 @@
     },
     {            
         "from" : "almeidabarrosdf@gmail.com",
-        "mailto" : ["dummy_eurex@outlook.com"],
+        "mailto" : ["dummy_eurex@outlook.com", "detlefd@gmx.net"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
         "condition": "always",
@@ -20,7 +20,7 @@
     },
     {            
         "from" : "almeidabarrosdf@gmail.com",
-        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com"],
+        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com", "detlefd@gmx.net"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
         "condition": "tage_bis_verfall<=5",
@@ -29,7 +29,7 @@
     },
     {            
         "from" : "almeidabarrosdf@gmail.com",
-        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com"],
+        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com", "detlefd@gmx.net"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
         "condition": "tage_bis_verfall<=5",
@@ -38,7 +38,7 @@
     },
     {            
         "from" : "almeidabarrosdf@gmail.com",
-        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com"],
+        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com", "detlefd@gmx.net"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
         "condition": "always",
@@ -47,7 +47,7 @@
     },
     {            
         "from" : "detlefd@gmx.net",
-        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com", "almeidabarrosdf@gmail.com"],
+        "mailto" : ["MyTest20230902@outlook.de", "dummy_eurex@outlook.com", "almeidabarrosdf@gmail.com", "info@dieball.de"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
         "condition": "always",
@@ -56,7 +56,7 @@
     }, 
     {            
         "from" : "info@dieball.de",
-        "mailto" : ["almeidabarrosdf@gmail.com"],
+        "mailto" : ["almeidabarrosdf@gmail.com", "detlefd@gmx.net"],
         "subject" : "OI-Tabelle",
         "text" : "dummy_msg.txt",
         "condition": "always",
