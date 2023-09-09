@@ -12,7 +12,7 @@ from plotly.colors import n_colors
 from typing import Union, List, Dict
 from bs4 import BeautifulSoup
 import traceback
-from utils import read_pickle, save_as_pickle
+from utils import read_pickle, save_as_pickle, next_business_day
 
 def get_date_idx(list_idxs)->list:
     while(True):
@@ -543,7 +543,7 @@ def generate_pdfs(auswahl):
         # Define some paremeters for the header
         header=dict(
             # Names of the columns
-            values=(bold(["Basis","Änderung",tradingDates[0].strftime("%d/%m/%Y"),tradingDates[1].strftime("%d/%m/%Y"),"Put", "Call"])),
+            values=(bold(["Basis","Änderung",next_business_day(tradingDates[0]).strftime("%d/%m/%Y"),next_business_day(tradingDates[1]).strftime("%d/%m/%Y"),"Put", "Call"])),
             
             # Header style
             fill_color='paleturquoise',

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from typing import List
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import pickle
 
 def create_folder(path):
@@ -54,3 +54,18 @@ def read_pickle(path):
     with open(path, 'rb') as handle:
         variable = pickle.load(handle)
         return variable
+    
+
+
+def next_business_day(input_datetime):
+    # Define a list of weekdays that are not considered business days (Saturday and Sunday)
+    non_business_days = [5, 6]  # 5 represents Saturday, and 6 represents Sunday
+
+    # Start with the next day from the input date
+    next_day = input_datetime + timedelta(days=1)
+
+    # Check if the next day is a non-business day (Saturday or Sunday)
+    while next_day.weekday() in non_business_days:
+        next_day += timedelta(days=1)
+
+    return next_day
