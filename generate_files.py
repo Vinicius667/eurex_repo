@@ -112,9 +112,10 @@ def get_overview(auswahl, tries=10):
             response = requests.get(url, params=params_details, headers=headers,timeout = 8)
             if not response.ok:
                 raise ValueError("Conection failed.")
+            break
         except:
-            print(traceback.format_exc())
-        break
+            continue
+            
     return url, headers, tradingDates, future_date_col, overview_df
 
 def get_contracts(url, headers, tradingDates, future_date_col,tries=10):
@@ -153,7 +154,7 @@ def get_contracts(url, headers, tradingDates, future_date_col,tries=10):
                     )
                     dict_prod_bus[productdate_idx][busdate_idx] = aux_df
                 except:
-                    print(traceback.format_exc())
+                    continue
                 break
     save_as_pickle(dict_prod_bus,os.path.join(temp_results_path, f'dict_prod_bus.pickle'))
     return dict_prod_bus
@@ -176,8 +177,8 @@ def generate_parquets(heute: Union[None, str] = None)->None:
     # During the generation of the PDF, the CSS file must be in the same directory
     # as the generated html file. So in case the CSS file is still not the in the
     # Results folder, we copy this file to it
-    if not os.path.exists(result_css):
-        shutil.copyfile(src_css, result_css)
+    #if not os.path.exists(result_css):
+    shutil.copyfile(src_css, result_css) # removed if bc file was not updated in Detlef's cloned
 
     list_email_send = []
 
@@ -194,6 +195,7 @@ def generate_parquets(heute: Union[None, str] = None)->None:
         # First stage
         url, headers, tradingDates, future_date_col, overview_df = get_overview(auswahl)
         dict_prod_bus =  get_contracts(url, headers, tradingDates, future_date_col)
+        #dict_prod_bus = read_pickle(os.path.join(temp_results_path, f'dict_prod_bus.pickle'))
 
         # **tbd: heute shall be a working day (Mo - Fr)**
         expiry = datetime.strptime(future_date_col[0],"%Y%m%d")
@@ -213,19 +215,21 @@ def generate_parquets(heute: Union[None, str] = None)->None:
 
         stocks = pd.read_html("https://www.boerse-stuttgart.de/en/")
 
-        if auswahl == 0:
+        if auswahl == 0: # DAX
             stocks_df = stocks[0]
             stock_price = stocks_df.loc[stocks_df['Indices GER'] == "L&S DAX","Price"].values[0]
             Spannweite = 2000
             Schritt = 50
             volatility_Laufzeit = 60
+            KontraktWert = 5
 
-        else:
+        else: # STOXX
             stocks_df = stocks[1]
             stock_price = stocks_df.loc[stocks_df['Indices EU / USA / INT'] == "CITI Euro Stoxx 50","Price"].values[0]
             Spannweite = 700
             Schritt = 25
             volatility_Laufzeit = 365
+            KontraktWert = 1
 
         span = (Spannweite/4)
         ZentralKurs = round(stock_price/span)*span
@@ -297,11 +301,11 @@ def generate_parquets(heute: Union[None, str] = None)->None:
 
 
         Ueberhaenge_df.rename(columns = {0 : "Front"},inplace=True)
-        Summery_df["heute"] = Ueberhaenge_df["Front"] * 0.2* delta
-
         Ueberhaenge_df.rename(columns = {1 : "Last"},inplace=True)
-        Summery_df["last_day"] = Ueberhaenge_df["Last"] * 0.2* delta
 
+
+        Summery_df["heute"] = Ueberhaenge_df["Front"] * (1 / KontraktWert) * delta
+        Summery_df["last_day"] = Ueberhaenge_df["Last"] * (1 / KontraktWert) * delta
 
         Ueberhaenge_df["Summe"] = Ueberhaenge_df[["Front", "nextContract"]].sum(axis=1)
         Ueberhaenge_df = Ueberhaenge_df[['Basis', 'Summe',"Last",'Front', "nextContract"]]
@@ -347,27 +351,26 @@ def generate_parquets(heute: Union[None, str] = None)->None:
                 # In python np.log = natural log
                 h1 = np.log(Kurs / Basis_value)
                 if auswahl == 0:
-                    sigma = volatility
-                else:
                     sigma = volatility * ((Tage / volatility_Laufzeit) ** 0.5)
+                else:
+                    sigma = volatility
+
                 sigma_1 = volatility * ((Tage_1 / volatility_Laufzeit) ** 0.5)
                 h2 = InterestRate + sigma * sigma / 2
                 h2_1 = InterestRate + sigma_1 * sigma_1 / 2
                 d1 = (h1 + (h2 * (Tage / 365))) / (sigma * ((Tage / 365) ** 0.5))
-
                 d1_1 = (h1 + (h2_1 * (Tage_1 / 365))) / (sigma_1 * ((Tage_1 / 365) ** 0.5))
-
                 Phi = norm.pdf(d1, 0, 1)               
-                Phi_1 = norm.pdf(d1_1, 0, 1)
-
+                Phi_1 = norm.pdf(d1_1 + 0.01, 0, 1)
                 Gamma = Phi / (Kurs * (sigma * (Tage / 365) ** 0.5))
                 Gamma_1 = Phi_1 / (Kurs * (sigma_1 * (Tage_1 / 365) ** 0.5))
-                HedgeBedarf_values[i,k] = Gamma * Kontrakte / 5
-                HedgeBedarf1_values[i,k] = Gamma_1 * Kontrakte_1 / 5
+                HedgeBedarf_values[i,k] = Gamma * Kontrakte / KontraktWert
+                HedgeBedarf1_values[i,k] = Gamma_1 * Kontrakte_1 / KontraktWert
 
 
         HedgeSum = HedgeBedarf_values.sum(axis=1)/2
         HedgeSum_1 = HedgeBedarf1_values.sum(axis=1)/2
+
         HedgeBedarf_df = pd.DataFrame(data =HedgeBedarf_values, columns= Basis )
         HedgeSum_df = pd.DataFrame(HedgeSum,columns=["HedgeSum"])
         HedgeBedarf_df = pd.concat([HedgeBedarf_kurs,HedgeSum_df,HedgeBedarf_df], axis=1)
@@ -375,6 +378,9 @@ def generate_parquets(heute: Union[None, str] = None)->None:
         HedgeBedarf1_df = pd.DataFrame(data =HedgeBedarf1_values, columns= Basis)
         HedgeSum1_df = pd.DataFrame(HedgeSum_1,columns=["HedgeSum"])
         HedgeBedarf1_df = pd.concat([HedgeBedarf_kurs,HedgeSum1_df,HedgeBedarf1_df], axis=1)
+
+
+
 
         # Fourth Stage
 
