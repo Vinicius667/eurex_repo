@@ -433,6 +433,8 @@ def generate_parquets(heute: Union[None, str] = None)->None:
 
         save_as_pickle(stock_price,os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_stock_price.pickle'))
         save_as_pickle(heute,os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_heute.pickle'))
+        save_as_pickle(future_date_col, os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_future_date_col.pickle'))
+
         save_as_pickle(tradingDates, os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_tradingDates.pickle'))
         save_as_pickle(expiry,os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_expiry.pickle'))
         save_as_pickle(tage_bis_verfall,os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_tage_bis_verfall.pickle'))
@@ -451,6 +453,8 @@ def generate_pdfs(auswahl):
     stock_price = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_stock_price.pickle'))
     heute = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_heute.pickle'))
     tradingDates = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_tradingDates.pickle'))
+    future_date_col = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_future_date_col.pickle'))
+
     expiry = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_expiry.pickle'))
     tage_bis_verfall = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_tage_bis_verfall.pickle'))
     delta = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_delta.pickle'))
@@ -539,7 +543,7 @@ def generate_pdfs(auswahl):
         # Define some paremeters for the header
         header=dict(
             # Names of the columns
-            values=(bold(["Basis","Änderung",heute.strftime("%d/%m/%Y"),tradingDates[1].strftime("%d/%m/%Y"),"Put", "Call"])),
+            values=(bold(["Basis","Änderung",tradingDates[0].strftime("%d/%m/%Y"),tradingDates[1].strftime("%d/%m/%Y"),"Put", "Call"])),
             
             # Header style
             fill_color='paleturquoise',
@@ -577,11 +581,12 @@ def generate_pdfs(auswahl):
     ))
 
     ##################################### Add plots in the chart #####################################
+    
     fig.add_trace(go.Scatter(
         x = HedgeBedarf_df.Sum,
         y = HedgeBedarf_df.Basis,
         mode = "lines",
-        name = heute.strftime("%Y-%m") +" + " + expiry.strftime("%Y-%m"),
+        name = datetime.strptime(future_date_col[0],"%Y%m%d").strftime("%Y-%m") + " + "+ datetime.strptime(future_date_col[1],"%Y%m%d").strftime("%Y-%m"),
         marker_color= "blue"
         ),
     )
@@ -590,7 +595,7 @@ def generate_pdfs(auswahl):
         x = HedgeBedarf1_df.HedgeSum,
         y = HedgeBedarf_df.Basis,
         mode = "lines",
-        name = expiry.strftime("%Y-%m"),
+        name = datetime.strptime(future_date_col[1],"%Y%m%d").strftime("%Y-%m"),
         marker_color= "purple"
         ),
     )
@@ -599,7 +604,7 @@ def generate_pdfs(auswahl):
         x = HedgeBedarf_df.HedgeSum,
         y = HedgeBedarf_df.Basis,
         mode = "lines",
-        name = heute.strftime("%Y-%m"),
+        name = datetime.strptime(future_date_col[0],"%Y%m%d").strftime("%Y-%m"),
         marker_color= "orange"
     ))
 

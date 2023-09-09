@@ -1,0 +1,9 @@
+Add more ticks on the axis
+Add a bar graph to the side
+
+
+For DAX:
+	if tage_bis_verfall < 5: 
+		Use another template the doesn't have Put and Call
+		Center graph around stock_price with 10 values below and above
+		Keep only the sum of Hedge1 and Hedge on the graph
