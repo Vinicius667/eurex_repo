@@ -8,3 +8,5 @@ lxml
 openpyxl
 beautifulsoup4>4,<5.0
 fastparquet<1.0
+dash<2.0
+nbformat

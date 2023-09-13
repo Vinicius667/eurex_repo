@@ -33,12 +33,16 @@ main{
     flex-direction: column;
     height: 12%;
     justify-content: space-between;
+    background-color: rgb(38, 91, 189);
+    border: 1px solid black;
 }
 
 #text_and_date{
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    background-color: rgb(38, 91, 189);
+    border: 1px solid black;
 }
 
 #date{
@@ -65,8 +69,6 @@ main{
     font-weight: bolder;
 
 }
-
-
 
 #tage_delta{
     display: flex;
@@ -123,6 +125,7 @@ main{
     width: 15%;
     align-items: center;
     justify-content: space-around;
+    
 }
 
 
@@ -130,8 +133,7 @@ main{
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    
-
+    background-color: rgb(38, 91, 189);
 }
 
 #svg_image{
@@ -140,7 +142,7 @@ main{
 }
 
 #future{
-    background-color: cornflowerblue;
+    background-color: rgb(38, 91, 189);
 }
 
 #disclaimer{
@@ -266,4 +268,15 @@ main{
     font-weight: 500;
     flex-grow: 1;
 
+}
+
+#data_images{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#table_bar{
+    display: flex;
+    flex-direction: row;
 }

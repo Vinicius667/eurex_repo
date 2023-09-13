@@ -195,7 +195,6 @@ def generate_parquets(heute: Union[None, str] = None)->None:
         # First stage
         url, headers, tradingDates, future_date_col, overview_df = get_overview(auswahl)
         dict_prod_bus =  get_contracts(url, headers, tradingDates, future_date_col)
-        #dict_prod_bus = read_pickle(os.path.join(temp_results_path, f'dict_prod_bus.pickle'))
 
         # **tbd: heute shall be a working day (Mo - Fr)**
         expiry = datetime.strptime(future_date_col[0],"%Y%m%d")
@@ -248,6 +247,8 @@ def generate_parquets(heute: Union[None, str] = None)->None:
         else:
             delta = 1
 
+
+        print(f"tage_bis_verfall = {tage_bis_verfall}")
         print(f"stock_price = {stock_price}")
         print(f"Minkurs = {Minkurs}")
         print(f"Maxkurs = {Maxkurs}")
@@ -255,6 +256,9 @@ def generate_parquets(heute: Union[None, str] = None)->None:
         print(f"ZentralKurs = {ZentralKurs}")
         print(f"volatility_Laufzeit = {volatility_Laufzeit}")
 
+        nbd_heute = next_business_day(tradingDates[0])
+        nbd_last = next_business_day(heute)
+        nbd_dict = {'heute' : nbd_heute, 'last' : nbd_last}
 
         # Second stage
         # Create Basis column that will be used for multiple tables
@@ -381,7 +385,6 @@ def generate_parquets(heute: Union[None, str] = None)->None:
 
 
 
-
         # Fourth Stage
 
         info_df = pd.DataFrame({
@@ -393,7 +396,6 @@ def generate_parquets(heute: Union[None, str] = None)->None:
             'expiry': expiry,
             'expiry_1': expiry_1,
             'heute': heute,
-            #"nextContract": expiry_1,
             'tage_bis_verfall': tage_bis_verfall,
             'stock_price': stock_price,
             'Minkurs': Minkurs,
@@ -422,46 +424,50 @@ def generate_parquets(heute: Union[None, str] = None)->None:
                 HedgeBedarf1_df.to_excel(writer,sheet_name='HedgeBedarf+01',index=False)
                 
         print("Excel files have been exported.")
-        HedgeBedarf_df["Sum"] = HedgeBedarf_df.HedgeSum + HedgeBedarf1_df.HedgeSum
 
+        """
+        
         Ueberhaenge_df.to_parquet(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_Ueberhaenge_df.parquet'))
         Summery_df.to_parquet(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_Summery_df.parquet'))
         SummeryDetail_df.to_parquet(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_SummeryDetail_df.parquet'))
         overview_df.to_parquet(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_overview_df.parquet'))
         HedgeBedarf_df[['Basis', 'Sum', 'HedgeSum']].to_parquet(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_HedgeBedarf_df.parquet'))
         HedgeBedarf1_df[['Basis', 'HedgeSum']].to_parquet(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_HedgeBedarf1_df.parquet'))
-
+        
         save_as_pickle(stock_price,os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_stock_price.pickle'))
         save_as_pickle(heute,os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_heute.pickle'))
         save_as_pickle(future_date_col, os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_future_date_col.pickle'))
 
-        save_as_pickle(tradingDates, os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_tradingDates.pickle'))
+        save_as_pickle(nbd_dict, os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_nbd_dict.pickle'))
         save_as_pickle(expiry,os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_expiry.pickle'))
         save_as_pickle(tage_bis_verfall,os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_tage_bis_verfall.pickle'))
         save_as_pickle(delta,os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_delta.pickle'))
-    save_as_pickle(list_email_send,os.path.join(temp_results_path, f'list_email_send.pickle'))
-    
+        """
+        file_path = os.path.join(current_results_path, f"{dict_index_stock[auswahl]}.pdf")
+        generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_price, heute, nbd_dict, tage_bis_verfall, delta, future_date_col, dict_index_stock, file_path)
+    #save_as_pickle(list_email_send,os.path.join(temp_results_path, f'list_email_send.pickle'))
+    return list_email_send
     
         
 
 
-def generate_pdfs(auswahl):
+def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_price, heute, nbd_dict, tage_bis_verfall, delta, future_date_col, dict_index_stock, file_path):
+    """
     Summery_df = pd.read_parquet(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_Summery_df.parquet'))
     HedgeBedarf_df = pd.read_parquet(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_HedgeBedarf_df.parquet'))
     HedgeBedarf1_df = pd.read_parquet(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_HedgeBedarf1_df.parquet'))
-
     stock_price = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_stock_price.pickle'))
     heute = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_heute.pickle'))
-    tradingDates = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_tradingDates.pickle'))
+    nbd_dict = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_nbd_dict.pickle'))
     future_date_col = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_future_date_col.pickle'))
-
-    expiry = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_expiry.pickle'))
     tage_bis_verfall = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_tage_bis_verfall.pickle'))
     delta = read_pickle(os.path.join(temp_results_path, f'{dict_index_stock[auswahl]}_delta.pickle'))
+    """
     # Fifth stage
     # Values to create arrow
     idx_closest = (HedgeBedarf_df.Basis - stock_price).abs().idxmin()
     closest_Basis =  HedgeBedarf_df.loc[idx_closest,"Basis"]
+    HedgeBedarf_df["Sum"] = HedgeBedarf_df.HedgeSum + HedgeBedarf1_df.HedgeSum
     closest_Sum = HedgeBedarf_df.loc[idx_closest,"Sum"]
 
     x_axis_length = HedgeBedarf_df.Sum.max() - HedgeBedarf_df.Sum.min()
@@ -471,6 +477,17 @@ def generate_pdfs(auswahl):
     max_Differenz = 1000
     prozentual = 0.2
 
+    condition_close_verfall = (auswahl == 0) and tage_bis_verfall < 5
+
+    if condition_close_verfall:
+        indexes = Summery_df.loc[(Summery_df.Basis >= stock_price)].tail(10).index.to_list() + Summery_df.loc[(Summery_df.Basis < stock_price)].head(10).index.to_list()
+        Summery_df =  Summery_df.loc[indexes].reset_index(drop=True)
+
+        indexes = HedgeBedarf_df.loc[(HedgeBedarf_df.Basis >= Summery_df.Basis.min()) & (HedgeBedarf_df.Basis <= Summery_df.Basis.max())].index
+        
+        HedgeBedarf_df = HedgeBedarf_df.loc[indexes].reset_index(drop=True)
+        HedgeBedarf1_df = HedgeBedarf1_df.loc[indexes].reset_index(drop=True)
+
     # (CF > min_Kontrakte) AND (PF > min_Kontrakte) AND (ABS(CF - PF)  < MIN(PF,CF)*)
     mask_highlights = (
         (Summery_df.openInterest_CF > min_Kontrakte) & 
@@ -478,6 +495,7 @@ def generate_pdfs(auswahl):
         (
             (Summery_df.openInterest_CF - Summery_df.openInterest_PF).abs() < 
             (Summery_df[['openInterest_PF',"openInterest_CF"]].min(axis=1)*prozentual)))
+
 
     ################################## Hilights for Basis column ####################################
 
@@ -503,145 +521,121 @@ def generate_pdfs(auswahl):
     #################################################################################################
 
     ###################### Gradient of green and blue for Put anc Call columns ######################
-    col_put_color = colors = np.array(n_colors('rgb(214, 245, 214)', 'rgb(40, 164, 40)',
+    col_put_color  = np.array(n_colors('rgb(214, 245, 214)', 'rgb(40, 164, 40)',
         20, colortype='rgb'))[scale_col_range(Summery_df.openInterest_PF,19)]
-    col_call_color = colors = np.array(n_colors('rgb(204, 224, 255)', 'rgb(0, 90, 179)',
+
+    col_call_color  = np.array(n_colors('rgb(204, 224, 255)', 'rgb(0, 90, 179)',
         20, colortype='rgb'))[scale_col_range(Summery_df.openInterest_CF,19)]
     #################################################################################################
 
-    num_rows = Summery_df.shape[0]
+    num_rows = Summery_df.shape[0]+1
     height = 1050 #row_height*42
-    row_height = int(height/(num_rows+1))
+    row_height = int(height/(num_rows))
 
     # width of the image
     widht = 1000
     row_height_percent =  (row_height/height)
 
-    # Create figure containg two elements
-    fig = make_subplots(
-        # 2 Columns which are table and chart
-        rows=1, cols=2,
-        # Width ocupied by table and chart
-        column_widths=[13,7],
 
-        # Define types of the figures and margins
-        specs=[[
-            {"type": "table", 't': 0.00, 'b':0.00},
-            {"type": "scatter",
-            # Add margins to the top and to the bottom so Basis column match the y axis of the chart 
-            "t" : 1.5*row_height_percent, 'b': 0.5*row_height_percent}, 
-            ]],
-    )
-            
 
-    # Create table figure
-    fig.add_trace(
-        # Choose element 1 => table
-        row = 1, col = 1,
-        trace = go.Table(
-
-        # Define some paremeters for the header
-        header=dict(
-            # Names of the columns
-            values=(bold(["Basis","Änderung",next_business_day(tradingDates[0]).strftime("%d/%m/%Y"),next_business_day(tradingDates[1]).strftime("%d/%m/%Y"),"Put", "Call"])),
-            
-            # Header style
-            fill_color='paleturquoise',
-                align='center',
-                font = {'size': 11},
-                height = row_height,
-            ),
-
-        cells=dict(
-
-            align='center',
-            height = row_height,
-            font = {'size': 11,},
-
-            # Values of the table
-            values=[
+    values_body = [
                 (Summery_df.Basis),
-                (Summery_df.Änderung.round(2)),
+                (Summery_df.Änderung.round(0)),
                 (Summery_df.heute.round(2)),
                 (Summery_df.last_day.round(2)),
-                (Summery_df.openInterest_PF), 
-                (Summery_df.openInterest_CF)
-            ],
 
-            # Colors of the columns
-            fill_color = [
-                col_basis_color,
-                col_anderung_color,
-                col_heute_color,
-                col_last_day_color,
-                col_put_color, 
-                col_call_color
-            ],
+            ]
+    values_header = bold(["Basis","Änderung",nbd_dict['heute'].strftime("%d/%m/%y"),nbd_dict['last'].strftime("%d/%m/%y")])
+
+
+    if not  condition_close_verfall:
+        values_body += [(Summery_df.openInterest_PF), (Summery_df.openInterest_CF)]
+        values_header += bold(["Put","Call"])
+
+
+    font_size =  int(440/num_rows)
+
+    fig = go.Figure(
+        data=[
+            go.Table(
+
+                # Define some paremeters for the header
+                header=dict(
+                    # Names of the columns
+                    values= values_header,
+                    
+                    # Header style
+                    fill_color='paleturquoise',
+                        align='center',
+                        font = {'size': int(font_size*0.8)},
+                        height = row_height,
+                ),
+
+                cells=dict(
+
+                    align='center',
+                    height = row_height,
+                    font = {'size': font_size,},
+
+                    # Values of the table
+                    values= values_body,
+
+                    # Colors of the columns
+                    fill_color = [
+                        col_basis_color,
+                        col_anderung_color,
+                        col_heute_color,
+                        col_last_day_color,
+                        col_put_color, 
+                        col_call_color
+                    ],
+                )
+            )
+        ],
+    )
+    fig.update_layout(
+        height=1050, width=550,
+        margin=dict(l=0,r=0,b=0.0,t=0)
+    )
+
+    fig.write_image(os.path.join(current_results_path,'image_table.svg'),scale=1)
+
+
+    data =  [
+        go.Scatter(
+            x = HedgeBedarf_df.Sum,
+            y = HedgeBedarf_df.Basis,
+            mode = "lines",
+            name = datetime.strptime(future_date_col[0],"%Y%m%d").strftime("%Y-%m") + " + "+ datetime.strptime(future_date_col[1],"%Y%m%d").strftime("%Y-%m"),
+            marker_color= "blue"
         )
-    ))
+    ]
 
-    ##################################### Add plots in the chart #####################################
-    
-    fig.add_trace(go.Scatter(
-        x = HedgeBedarf_df.Sum,
-        y = HedgeBedarf_df.Basis,
-        mode = "lines",
-        name = datetime.strptime(future_date_col[0],"%Y%m%d").strftime("%Y-%m") + " + "+ datetime.strptime(future_date_col[1],"%Y%m%d").strftime("%Y-%m"),
-        marker_color= "blue"
-        ),
-    )
 
-    fig.add_trace(go.Scatter(
-        x = HedgeBedarf1_df.HedgeSum,
-        y = HedgeBedarf_df.Basis,
-        mode = "lines",
-        name = datetime.strptime(future_date_col[1],"%Y%m%d").strftime("%Y-%m"),
-        marker_color= "purple"
-        ),
-    )
-
-    fig.add_trace(go.Scatter(
-        x = HedgeBedarf_df.HedgeSum,
-        y = HedgeBedarf_df.Basis,
-        mode = "lines",
-        name = datetime.strptime(future_date_col[0],"%Y%m%d").strftime("%Y-%m"),
-        marker_color= "orange"
-    ))
+    if not condition_close_verfall:
+        data += [
+            go.Scatter(
+                x = HedgeBedarf1_df.HedgeSum,
+                y = HedgeBedarf_df.Basis,
+                mode = "lines",
+                name = datetime.strptime(future_date_col[1],"%Y%m%d").strftime("%Y-%m"),
+                marker_color= "purple"
+            ),
+            go.Scatter(
+            x = HedgeBedarf_df.HedgeSum,
+            y = HedgeBedarf_df.Basis,
+            mode = "lines",
+            name = datetime.strptime(future_date_col[0],"%Y%m%d").strftime("%Y-%m"),
+            marker_color= "orange"
+            )
+        ]
 
     ##################################################################################################
     dx =  0.1*(HedgeBedarf_df.Sum.max() - HedgeBedarf_df.Sum.min())
 
 
-    if num_rows > 40:
-        height+= row_height 
 
-    fig.update_layout(
-        # Set limits in the x and y axis
-        yaxis_range= [HedgeBedarf_df.Basis.min(), HedgeBedarf_df.Basis.max()],
-        xaxis_range= [HedgeBedarf_df.Sum.min() - dx, HedgeBedarf_df.Sum.max() + dx],
-        
-        # Remove margins
-        margin=dict(l=0,r=0,b=0.01,t=0),
-        paper_bgcolor="white",
-        
-
-        # Define width and height of the image
-        width=widht,height=height,
-        template = "seaborn",
-
-        # Legend parameters
-        legend=dict(
-            yanchor="top",
-            y=0.98 - (row_height/height),
-            xanchor="right",
-            x= 0.98,
-            font=dict(
-                size = 10
-            ),
-            # legend in the vertical
-            orientation = "v"
-            )
-    )
+    fig = go.Figure(data=data)
 
     # Create arrow
     fig.add_trace(go.Scatter(
@@ -652,7 +646,79 @@ def generate_pdfs(auswahl):
         )
     )
 
-    fig.write_image(result_image,scale=1)
+
+    fig.update_layout(
+        margin=dict(l=0,r=0,b=0.1,t=row_height),
+        # Set limits in the x and y axis
+        yaxis_range= [HedgeBedarf_df.Basis.min(), HedgeBedarf_df.Basis.max()],
+        xaxis_range= [HedgeBedarf_df.Sum.min() - dx, HedgeBedarf_df.Sum.max() + dx],
+        yaxis = dict(
+            tickmode = 'array',
+            tickvals = HedgeBedarf_df.Basis[HedgeBedarf_df.index % 3 == 0],
+            #ticktext = ['One', 'Three', 'Five', 'Seven', 'Nine', 'Eleven']
+        ),
+        
+        # Remove margins
+        paper_bgcolor="white",
+        
+        # Define width and height of the image
+        width=380,height=1050,
+        template = "seaborn",
+
+        # Legend parameters
+        legend=dict(
+            yanchor="top",
+            y=1,# - (row_height/height),
+            xanchor="right",
+            x= 1,
+            font=dict(
+                size = 8
+            ),
+            # legend in the vertical
+            orientation = "v",
+            bgcolor  = 'rgba(0,0,0,0)'
+            ),
+    )
+
+
+    fig.write_image(os.path.join(current_results_path,'image_graph.svg'),scale=1)
+
+
+
+    fig = go.Figure()
+
+    if not condition_close_verfall:
+        fig.add_trace(
+            trace = go.Bar(name='Put', y=Summery_df.Basis, x=Summery_df.openInterest_PF,orientation='h', marker_color = 'rgb(40, 164, 40)'),
+        )
+
+        fig.add_trace(
+            trace = go.Bar(name='Call', y=Summery_df.Basis, x=Summery_df.openInterest_CF,orientation='h', marker_color = 'rgb(0, 90, 179)'),
+        )
+
+
+
+    fig.update_layout(
+        barmode='stack', margin=dict(l=0,r=0,b=0.1,t=row_height),
+        # Set limits in the x and y axis
+        #yaxis_range= [HedgeBedarf_df.Basis.min(), HedgeBedarf_df.Basis.max()],
+        #xaxis_range= [HedgeBedarf_df.Sum.min() - dx, HedgeBedarf_df.Sum.max() + dx],
+        
+        # Define width and height of the image
+        width=80,height=1050,
+        template = "seaborn",
+        showlegend=False,
+        bargap =0.5 ,
+        plot_bgcolor='rgba(0, 0, 0, 0)',
+        paper_bgcolor='rgba(0, 0, 0, 0)',
+    )
+
+
+    fig.update_xaxes(visible=False)
+    fig.update_yaxes(visible=False)
+
+    fig.write_image(os.path.join(current_results_path,'image_bar.svg'),scale=1)
+
 
     with open(src_html) as file:
         template = file.read()
@@ -675,13 +741,9 @@ def generate_pdfs(auswahl):
 
     # Results files
     
-    list_pdf_files = [
-        os.path.join(current_results_path, f"{dict_index_stock[auswahl]}.pdf"),
-        os.path.join(old_results_path, f"{dict_index_stock[auswahl]}_{datetime.today().strftime('%Y_%m_%d')}.pdf")
-        ]
 
-    converter.convert("file://" + os.path.join(os.getcwd(),result_html), list_pdf_files[0])
-    shutil.copyfile(list_pdf_files[0], list_pdf_files[1])
+    converter.convert("file://" + os.path.join(os.getcwd(),result_html), file_path)
+    #shutil.copyfile(list_pdf_files[0], list_pdf_files[1])
     
     print("PDF has been generated.")
 
