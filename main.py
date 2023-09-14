@@ -3,10 +3,9 @@ from send_mail import send_mail_outlook, check_emails_available_outlook, client
 from send_mail import send_mail
 
 
-list_email_send = set(generate_parquets(heute= None))
+list_email_send = set(generate_files(heute_input= None))
 print(list_email_send)
 
-raise Exception("Stop here")
 print(f"list_email_send = {list_email_send}")
 outlook = client.Dispatch('Outlook.Application')
 for email in list_emails:

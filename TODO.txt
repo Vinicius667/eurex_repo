@@ -7,3 +7,6 @@ For DAX:
 		Use another template that doesn't have Put and Call OK
 		Center graph around stock_price with 10 values below and above OK
 		Keep only the sum of Hedge1 and Hedge on the graph OK
+
+
+Make PDFs match
