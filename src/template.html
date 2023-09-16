@@ -1,113 +1,318 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>EUREX</title>
-    <link rel="stylesheet" href="./style.css">
-  </head>
-  <body>
-    <main>
-        <div id = "header">
-            <div id="text_and_date"> 
-                <div class = "big_small_text">
-                    <div class = "bigger_text">
-                        $TITLE$
-                    </div>
-                    <div class = "smaller_text">
-                        basierend auf Daten von der EUREX <br>
-                        (http://www.eurexchange.com/exchange-de/disclaimer)
-                    </div>
-                </div>
-                <div id="date">
-                        $DATE$
-                </div>
-            </div>
-            <div id= "tage_delta">
-                <div id = "tage">
-                    <div id = "tage_text">Tage bis Verfall</div>
-                    <div id = "tage_value">$TBF$</div>
-                </div> 
-        
-                <div id = "delta">
-                    <div id = "delta_text">Delta</div>
-                    <div id = "delta_value">$DELTA$</div>
-                </div>
-            </div> 
-        
-            <div class = "big_small_text" id = "future">
-                <div class = "bigger_text">
-                    Future-Hedgebedarf für Überhänge der Optionen
-                </div>
-                <div class = "smaller_text">
-                    (Überhang/5)*delta
-                </div>
-            </div>
-        </div>
-        
-        <div id = "data_images">
-            <div id = "table_bar">
-                <div id = "svg_image">
-                    <img src="image_table.svg" style="height: 800px">
-                </div>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>EUREX</title>
+		<link rel="stylesheet" href="./style.css">
+	</head>
+	<body>
+		<main>
+			<div class = "header">
+				<div class ="text_and_date">
+				    <div class = "big_small_text">
+						<div class = "bigger_text">
+							$TITLE$
+						</div>
+						<div class = "smaller_text">
+							basierend auf Daten von der EUREX <br>
+							(http://www.eurexchange.com/exchange-de/disclaimer)
+						</div>
+					</div>
+					<div class ="date">
+						$DATE$
+					</div>
+				</div>
+				<div class = "tage_delta">
+					<div class = "tage">
+						<div class = "tage_text">Tage bis Verfall</div>
+						<div class = "tage_value">$TBF$</div>
+					</div>
+					<div class = "delta">
+						<div class = "delta_text">Delta</div>
+						<div class = "delta_value">$DELTA$</div>
+					</div>
+				</div>
+				<div class = "big_small_text" id = "future">
+					<div class = "bigger_text">
+						Future-Hedgebedarf für Überhänge der Optionen
+					</div>
+					<div class = "smaller_text">
+						(Überhang/5)*delta
+					</div>
+				</div>
+				<div class = "graph_header">
+					<div class = "front_date"> Front: $FRONT_DATE$</div>
+					<div class = "hedge_info"> Änderung des Hedgebedarfs für den
+						Frontmonat (Kontrakte/P, Abschätzung)
+						Faktor:50% (des theoretischen Wertes)
+					</div>
+				</div>
+			</div>
+			<div class = "data_images">
+				<div class = "table_bar">
+					<div class = "svg_image">
+						<img src="image_table.svg" style="height: 800px">
+					</div>
+					<div class = "svg_image2">
+						<img src="image_bar.svg" style="height: 800px">
+					</div>
+				</div>
+				<div class = "svg_image3">
+					<img src="image_graph.svg" style="height: 813px">
+				</div>
+			</div>
+			<div class="bellow_image">
+				<div class="legend_info_name">
+					<div class="legend_info">
+						<div class="legend">
+							<div class="legend0">
+								<div class="yellow_block"></div>
+								<div class="große"> große (fast) ausgeglichene Optionsposition</div>
+							</div>
+							<div class="legend1">
+								<div class="gamma" id = "gamma_long">Gamma long (Put long Überhänge)</div>
+								<div class="gamma" id = "gamma_short">Gamma short (Call short Überhänge)</div>
+							</div>
+							<div class="legend2">
+								<div class="sum_contracts">
+									<div class="sum">$PUT_SUM$ <br>Put</div>
+									<div class="sum">$CALL_SUM$<br>Call</div>
+								</div>
+								<div class="legend_sum">
+									Options-kontrakte gesamt
+								</div>
+							</div>
+						</div>
+						<div class="info">
+							* Nur Front-Monat betrachtet für den aktuellen und den letzten Handelstag
+						</div>
+					</div>
+					<div class="name">
+						<br>
+						© Detlef Dieball
+					</div>
+				</div>
+			</div>
+			<div class = "header">
+				<div class ="text_and_date">
+				    <div class = "big_small_text">
+						<div class = "bigger_text">
+							$TITLE$
+						</div>
+						<div class = "smaller_text">
+							basierend auf Daten von der EUREX <br>
+							(http://www.eurexchange.com/exchange-de/disclaimer)
+						</div>
+					</div>
+					<div class ="date">
+						$DATE$
+					</div>
+				</div>
+				<div class = "tage_delta">
+					<div class = "tage">
+						<div class = "tage_text">Tage bis Verfall</div>
+						<div class = "tage_value">$TBF$</div>
+					</div>
+					<div class = "delta">
+						<div class = "delta_text">Delta</div>
+						<div class = "delta_value">$DELTA$</div>
+					</div>
+				</div>
+				<div class = "big_small_text" id = "future">
+					<div class = "bigger_text">
+						Future-Hedgebedarf für Überhänge der Optionen
+					</div>
+					<div class = "smaller_text">
+						(Überhang/5)*delta
+					</div>
+				</div>
+				<div class = "graph_header">
+					<div class = "front_date"> Front: 2023-09</div>
+					<div class = "hedge_info"> Änderung des Hedgebedarfs für den
+						Frontmonat (Kontrakte/P, Abschätzung)
+						Faktor:50% (des theoretischen Wertes)
+					</div>
+				</div>
+			</div>
+			<div class = "data_images">
+				<div class = "table_bar">
+					<div class = "svg_image">
+						<img src="image_table_verfall.svg" style="height: 800px">
+					</div>
+					<div class = "svg_image2">
+						<img src="image_bar_verfall.svg" style="height: 800px">
+					</div>
+				</div>
+				<div class = "svg_image3">
+					<img src="image_graph_verfall.svg" style="height: 813px">
+				</div>
+			</div>
+			<div class="bellow_image">
+				<div class="legend_info_name">
+					<div class="legend_info">
+						<div class="legend">
+							<div class="legend1_verfall">
+								<div class="gamma_verfall" id = "gamma_long">Gamma long (Put long Überhänge)</div>
+								<div class="gamma_verfall" id = "gamma_short">Gamma short (Call short Überhänge)</div>
+							</div>
+						</div>
+						<div class="info">
+							* Nur Front-Monat betrachtet für den aktuellen und den letzten Handelstag
+						</div>
+					</div>
+					<div class="name">
+						<br>
+						© Detlef Dieball
+					</div>
+				</div>
+			</div>
+			<div id = "preise">
+				<b>Preise</b>  <br><br><br>
+				<div  style="color: blue">Options-Analysen:</div> 
+				OI-Tabelle FDAX Professionell &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;  19,50€/M <br>
+				<br> <br> <br> <br>
+				OI-Tabelle STOXX &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;  &emsp;  &emsp;  &emsp;  19,50€/M
+				<br> <br> <br> <br>
 
-                <div id = "svg_image2">
-                    <img src="image_bar.svg" style="height: 800px">
-                </div>
-            </div>
+				Versand per Mail, Kündigungsfrist 1 Woche zum Monatsende 
+				<br> <br> <br>
+				
+				<b>Weitere Angebote</b>
+				<br> <br>
 
-            <div id = "svg_image3">
-                <img src="image_graph.svg" style="height: 813px">
-            </div>
-        </div>
+				<div  style="color: blue">Programmierungen</div> 
+				<span  style="color: blue">Algo-Entwicklungen Nach Aufwand</span>  &emsp; &emsp; &emsp; &emsp; &emsp; Nach Aufwand
+				<div  style="color: blue">Backtesting</div> 
+				<div  style="color: blue">Analysen und Statistiken</div> 
+				
+				<br> <br> <br>
 
-        <div id = "bellow_image">
-            <div id = "legend_info_name">
-            <div id = "legend_info">
-                <div id = "legend">
-                    <div id = "legend0">
-                        <div id = "yellow_block"></div>
-                        <div id = "große"> große (fast) ausgeglichene Optionsposition</div>
-                    </div>
-                    <div id = "legend1">
-                        <div id = "gamma_long">Gamma long (Put long Überhänge)</div>
-                        <div id = "gamma_short">Gamma short (Call short Überhänge)</div>
-                    </div>
-                    <div id = "legend2">
-                        <div id = "sum_contracts">
-                            <div class="sum">$PUT_SUM$</div>
-                            <div class="sum">$CALL_SUM$</div>
-                        </div>
-                        <div id = "legend_sum">
-                            Options-kontrakte gesamt
-                        </div>
-                    </div>
-                </div>
-                <div id = info>
-                    * Nur Front-Monat betrachtet für den aktuellen und den letzten Handelstag
-                </div>
-            </div>
-            <div id = name>
-                <br>
-                © Detlef Dieball
-            </div>
-        </div>
-            <div id="disclaimer">
-                <br>
-                Disclaimer / Haftungsausschluss <br>
-                Diese Unterlage ist nach bestem Wissen und Gewissen sorgfälltig erstellt.<br>
-                Alle Ausführungen dieser Unterlage dienen zu Informations- und Lernzwecken. Sie stellen in keinem Falle eine Aufforderung zum Handel mit den erwähnten Trading-lnstrumenten dar. <br>
-                Eine Haftung ist ausgeschlossen.
-                Der Handel an den Finanzmärkten birgt das Risiko des Totalverlusts, möglicherweise über das eingesetzte Kapital hinaus. Handelsentscheidungen treffen die Händler eigenverantwortlich. Jede Haftung oder Verantwortung wird  abgelehnt.<br>
-                Durch Verwenden dieser Unterlage gilt dieser Disclaimer als akzeptiert.
-            </div>
-        </div>
+				Alle Preise enthalten 19% Mehrwertsteuer
+				<br> <br> <br>
 
-    </main>
 
-    
-    
+				Der Versand erholgt handelstäglich, es sei denn durch höhere Gewalt kann keine Berechnung erfolgen oder nicht
+				versendet werden (Ausfall Internet, Strom, keine bereitgestellten Daten, Krankheit, Krieg,...)
+				<br> <br> <br><br> <br> <br><br> <br> <br><br> <br> <br><br> <br> <br><br> <br> <br><br> <br> <br><br> <br><br> <br><br> <br>
+				<br><br> <br><br><br> <br>
 
-  </body>
-</html
+				<div style="text-align: center; width: 100%;">Ing.-Büro Dieball Oderstr.8 01109 Dresden OI-Tabellen@gmx.de</div>
+			</div>
+			<div id = "disclaimer" style="font-size: larger; text-align: center;">
+				Disclaimer / Haftungsausschluss <br>
+				Diese Unterlage ist nach bestem Wissen und Gewissen sorgfälltig erstellt und stellt die<br>
+				persönliche Meinung des Verfassers dar, sie stellt auch keine Anlageberatung dar.<br>
+				Alle Ausführungen dieser Unterlage dienen zu Informations- und Lernzwecken.<br>
+				Genauigkeit und Vollständigkeit beruhen auf veröffentlichten Daten. Für die<br>
+				Richtigkeit, Genauigkeit, Vollständigkeit sowie Pünktlichkeit dieser Unterlage wird<br>
+				keine Haftung übernommen. Diese Unterlage stellt in keinem Falle eine Aufforderung<br>
+				zum Handel dar. Es kann keine Gewähr übernommen werden, dass Sie mit diesen<br>
+				Inhalten Gewinne erzielen oder Verluste verringern können. Eine Haftung ist<br>
+				ausgeschlossen.<br>
+
+				Der Handel an den Finanzmärkten birgt das Risiko des Totalverlusts, möglicherweise<br>
+				über das eingesetzte Kapital hinaus. Handelsentscheidungen treffen die Händler<br>
+				eigenverantwortlich. Jede Haftung oder Verantwortung wird abgelehnt.<br>
+				Durch Verwenden dieser Unterlage gilt dieser Disclaimer als akzeptiert.<br>
+			</div>
+
+			<div style="font-size: 20px; text-align: center; margin-bottom: 20px;">Glossar</div>
+			<div class="glossar">
+				<div class="term">
+					Verfall:
+				</div>
+
+				<div class="definition">
+					Verfallsdatum ist für die DAX und STOXX Optionen jeweils der 3. Freitag jedes Monats
+				</div>
+			</div>
+			
+			<div class="glossar">
+				<div class="term">
+					Tage bis Verfall:
+				</div>
+
+				<div class="definition">
+					Tage bis zum Verfallsdatum incl. Wochenende und Feiertage
+				</div>
+			</div>
+			
+			<div class="glossar">
+				<div class="term">
+					kleiner Verfall:
+				</div>
+
+				<div class="definition">
+					Verfall der Optionen
+				</div>
+			</div>
+			
+			<div class="glossar">
+				<div class="term">
+					großer Verfall:
+				</div>
+
+				<div class="definition">
+					Verfall der Optionen und Futuresgleichzeitig (mehrere Interessenlagen kommen zusammen!) => auf neuen Future-Kontrakt updaten
+				</div>
+			</div>
+			
+			<div class="glossar">
+				<div class="term">
+					Delta
+				</div>
+
+				<div class="definition">
+					Änderung des Optionspreises, wenn sich der Basispreis um 1 ändert. <br>
+					Das Delta wird auch benutzt um die Ausübungswahrscheinlichkeit abzuschätzen: <br>
+					Delta = 0,5 => 50% Wahrscheinlichkeit, dass die Option am Verfallstag mit Gewinn ausgeübt werden kann
+				</div>
+			</div>
+			
+			<div class="glossar">
+				<div class="term">
+					Future Delta Hedge
+				</div>
+
+				<div class="definition">
+					Hedge an den Basispreisen im Future um Delta neutral zu sein
+				</div>
+			</div>
+
+			</div></div>			<div class="glossar">
+				<div class="term">
+					Gamma
+				</div>
+
+				<div class="definition">
+					Änderung des Deltas, wenn sich der Basispreis um 1 ändert, Beschleunigung der Preisänderung.
+				</div>
+			</div>
+		
+			<div class="glossar">
+				<div class="term">
+					Gamma long
+				</div>
+
+				<div class="definition">
+					Gamma positiv <br>
+					Der Theta-Gamma Optionshändler kann bei jeder Marktbewegung gewinnen => der Markt wird "klebrig"
+				</div>
+			</div>
+
+			<div class="glossar">
+				<div class="term">
+					Gamma short
+				</div>
+
+				<div class="definition">
+					Gamma negativ <br>
+					Bei jeder Marktbewegung muss der Theta-Gamma Optionshändler hedgen - in Bewegungsrichtung => der Markt wird hektisch
+				</div>
+			</div>
+		
+		</main>
+	</body>
+</html>

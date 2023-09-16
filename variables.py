@@ -5,6 +5,27 @@ import json
 
 save_files_to_debug = True
 
+
+
+
+def get_default_values(auswahl):
+    if auswahl == 0: # DAX
+        return dict(
+        Spannweite = 2000,
+        Schritt = 50,
+        volatility_Laufzeit = 60,
+        KontraktWert = 5,
+        )
+
+    else: # STOXX
+        return dict(
+        Spannweite = 700,
+        Schritt = 25,
+        volatility_Laufzeit = 365,
+        KontraktWert = 1,
+        )
+
+
 dict_index_stock = {
         0 : "DAX",
         1 : "STOXX"
@@ -40,7 +61,8 @@ with open(list_creditials_path) as file:
     list_credentials = json.load(file)['credentials']
 
 
-result_html = os.path.join(current_results_path,"eurex.html")
+summery_html = os.path.join(current_results_path,"summery.html")
+summery_verfall_html = os.path.join(current_results_path,"summery_verfall.html")
 result_css = os.path.join(current_results_path,"style.css")
 result_image = os.path.join(current_results_path,"image.svg")
 
