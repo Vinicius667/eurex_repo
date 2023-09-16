@@ -30,7 +30,7 @@ for auswahl in [1,0]:
 
 
 list_email_send = set(list_email_send)
-raise
+
 print(f"list_email_send = {list_email_send}")
 outlook = client.Dispatch('Outlook.Application')
 for email in list_emails:

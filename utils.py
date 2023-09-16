@@ -148,6 +148,7 @@ def get_overview(auswahl, tries=10):
 
 
 def get_contracts(heute, url, headers, tradingDates, future_date_col,tries=10):
+    #https://en.wikipedia.org/wiki/Offset_(computer_science)#
     offset = 0
     # **tbd: heute shall be a working day (Mo - Fr)**
     expiry = datetime.strptime(future_date_col[0],"%Y%m%d")
@@ -156,11 +157,11 @@ def get_contracts(heute, url, headers, tradingDates, future_date_col,tries=10):
     tage_bis_verfall = (expiry - heute).days
     
     if tage_bis_verfall < 0:
-        expiry = datetime.strptime(future_date_col[1],"%Y%m%d")
-        expiry_1 = datetime.strptime(future_date_col[2],"%Y%m%d") 
         offset = 1
-    tage_bis_verfall = (expiry - heute).days +1
 
+    expiry = datetime.strptime(future_date_col[0 + offset],"%Y%m%d")
+    expiry_1 = datetime.strptime(future_date_col[1 + offset],"%Y%m%d") 
+    tage_bis_verfall = (expiry - heute).days +1
 
     print(f"################## Obtaining contracts ##################")
     params_details = {}
@@ -378,7 +379,7 @@ def hedge(auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, dict
             
             elif productdate_idx == 1:
                 if busdate_idx == 0:
-                    Ueberhaenge_df["nextContract"] = aux_df.openInterest_PF - aux_df.openInterest_CF
+                    Ueberhaenge_df["nextContract"] = -(aux_df.openInterest_PF - aux_df.openInterest_CF)
                     Summery_df["nextContract"] = Ueberhaenge_df["nextContract"]
 
 
@@ -426,7 +427,7 @@ def hedge(auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, dict
     for k in range(Hedge_dimensions[1]):
         Basis_value = Basis[k]
         Kontrakte = Ueberhaenge_df.loc[k,"Front"]
-        Kontrakte_1 = -Ueberhaenge_df.loc[k,"nextContract"] # ASK: Why negative?
+        Kontrakte_1 = Ueberhaenge_df.loc[k,"nextContract"] # ASK: Why negative?
         for i in range(Hedge_dimensions[0]):
             Kurs = Maxkurs - i * SchrittWeite
             # In python np.log = natural log
@@ -595,7 +596,7 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
         False : ""
     }
 
-    #is_detailed = (auswahl == 0) and tage_bis_verfall < 5
+    is_close_verfall =  tage_bis_verfall < 5
     for is_detailed in [False, True]:
         if is_detailed:
             indexes = Summery_df.loc[(Summery_df.Basis >= stock_price)].tail(10).index.to_list() + Summery_df.loc[(Summery_df.Basis < stock_price)].head(10).index.to_list()
@@ -780,7 +781,7 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
             yaxis = dict(
                 tickmode = 'array',
                 tickvals = HedgeBedarf_df.Basis[HedgeBedarf_df.index % 3 == 0],
-                #ticktext = ['One', 'Three', 'Five', 'Seven', 'Nine', 'Eleven']
+                ticktext = ['One', 'Three', 'Five', 'Seven', 'Nine', 'Eleven']
             ),
             
             # Remove margins
@@ -848,6 +849,12 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
         with open(src_html) as file:
             template = file.read()
 
+        if not is_close_verfall:
+            subst = ""
+            regex = r"\$BEGIN_DETAIL\$.*\$END_DETAIL\$"
+            template = re.sub(regex, subst, template, 0, re.MULTILINE | re.DOTALL)
+        else:
+            template = template.replace("$BEGIN_DETAIL$", "").replace("$END_DETAIL$", "")
 
         dict_title = {
             0 : "OpenInterest und HedgeBedarf",
