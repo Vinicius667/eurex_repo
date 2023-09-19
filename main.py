@@ -32,7 +32,7 @@ for auswahl in [1,0]:
 list_email_send = set(list_email_send)
 
 print(f"list_email_send = {list_email_send}")
-outlook = client.Dispatch('Outlook.Application')
+outlook = client.Dispatch('Outlook.Application')  
 for email in list_emails:
     if check_emails_available_outlook(outlook, email['from']):
         if email['id'] in list_email_send:

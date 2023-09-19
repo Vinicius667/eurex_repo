@@ -815,7 +815,7 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
 
         if not is_detailed:
             fig.add_trace(
-                trace = go.Bar(name='Put', y=Summery_df.Basis, x=Summery_df.openInterest_PF,orientation='h', marker_color = 'rgb(40, 164, 40)'),
+                trace = go.Bar(name='Put', y=Summery_df.Basis, x=-Summery_df.openInterest_PF,orientation='h', marker_color = 'rgb(40, 164, 40)'),
             )
 
             fig.add_trace(
@@ -825,7 +825,9 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
 
 
         fig.update_layout(
-            barmode='stack', margin=dict(l=0,r=0,b=0.1,t=row_height),
+            #barmode='stack', 
+            barmode='overlay', 
+            margin=dict(l=0,r=0,b=0.1,t=row_height),
             # Set limits in the x and y axis
             #yaxis_range= [HedgeBedarf_df.Basis.min(), HedgeBedarf_df.Basis.max()],
             #xaxis_range= [HedgeBedarf_df.Sum.min() - dx, HedgeBedarf_df.Sum.max() + dx],
