@@ -449,7 +449,7 @@ def hedge(auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, dict
             HedgeBedarf_values[i,k] = Gamma * Kontrakte / KontraktWert
             HedgeBedarf1_values[i,k] = Gamma_1 * Kontrakte_1 / KontraktWert
 
-            if Kurs == 4650:
+            if Kurs == 17000:
                 continue
     HedgeSum = HedgeBedarf_values.sum(axis=1)/2
     HedgeSum_1 = HedgeBedarf1_values.sum(axis=1)/2
@@ -581,10 +581,10 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
     # Values to create arrow
     idx_closest = (HedgeBedarf_df.Basis - stock_price).abs().idxmin()
     closest_Basis =  HedgeBedarf_df.loc[idx_closest,"Basis"]
-    HedgeBedarf_df["Sum"] = HedgeBedarf_df.HedgeSum + HedgeBedarf1_df.HedgeSum
-    closest_Sum = HedgeBedarf_df.loc[idx_closest,"Sum"]
+    hedge_sum = HedgeBedarf_df.HedgeSum + HedgeBedarf1_df.HedgeSum
+    closest_Sum = hedge_sum.loc[idx_closest]
 
-    x_axis_length = HedgeBedarf_df.Sum.max() - HedgeBedarf_df.Sum.min()
+    x_axis_length = hedge_sum.max() - hedge_sum.min()
     y_axis_length = HedgeBedarf_df.Basis.max() - HedgeBedarf_df.Basis.min()
 
     min_Kontrakte = 5000
@@ -732,7 +732,7 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
             ),
 
             go.Scatter(
-                x = HedgeBedarf_df.Sum,
+                x = hedge_sum,
                 y = HedgeBedarf_df.Basis,
                 mode = "lines",
                 name =expiry.strftime("%Y-%m") + " + "+ expiry_1.strftime("%Y-%m"),
@@ -747,8 +747,12 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
             showlegend = False
         )
         ]
-
+        
+        min_x_list = [hedge_sum.min()]
+        max_x_list = [hedge_sum.max()]
         if not is_detailed:
+            min_x_list.append(HedgeBedarf1_df.HedgeSum.min())
+            max_x_list.append(HedgeBedarf1_df.HedgeSum.max())
             data += [
                 go.Scatter(
                     x = HedgeBedarf1_df.HedgeSum,
@@ -757,31 +761,25 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
                     name = expiry_1.strftime("%Y-%m"),
                     marker_color= "rgb(255,0,255)"
                 ),
-                #go.Scatter(
-                #x = HedgeBedarf_df.HedgeSum,
-                #y = HedgeBedarf_df.Basis,
-                #mode = "lines",
-                #name = datetime.strptime(future_date_col[0],"%Y%m%d").strftime("%Y-%m"),
-                #marker_color= "orange"
-                #)
             ]
 
         ##################################################################################################
-        dx =  0.1*(HedgeBedarf_df.Sum.max() - HedgeBedarf_df.Sum.min())
+        dx =  0.1*(hedge_sum.max() - hedge_sum.min())
 
 
 
         fig = go.Figure(data=data)
 
+        #mask = HedgeBedarf_df.index % round(HedgeBedarf_df.shape[0]/40) == 0
         fig.update_layout(
             margin=dict(l=0,r=0,b=0.1,t=row_height),
             # Set limits in the x and y axis
             yaxis_range= [HedgeBedarf_df.Basis.min(), HedgeBedarf_df.Basis.max()],
-            xaxis_range= [HedgeBedarf_df.Sum.min() - dx, HedgeBedarf_df.Sum.max() + dx],
+            xaxis_range= [min(min_x_list) - dx, max(max_x_list) + dx],
             yaxis = dict(
                 tickmode = 'array',
-                tickvals = HedgeBedarf_df.Basis[HedgeBedarf_df.index % 3 == 0],
-                ticktext = HedgeBedarf_df.Basis[HedgeBedarf_df.index % 3 == 0]
+                tickvals = Summery_df.Basis, #HedgeBedarf_df.Basis[mask],
+                ticktext = Summery_df.Basis,#HedgeBedarf_df.Basis[mask]
             ),
             
             # Remove margins
@@ -830,7 +828,7 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
             margin=dict(l=0,r=0,b=0.1,t=row_height),
             # Set limits in the x and y axis
             #yaxis_range= [HedgeBedarf_df.Basis.min(), HedgeBedarf_df.Basis.max()],
-            #xaxis_range= [HedgeBedarf_df.Sum.min() - dx, HedgeBedarf_df.Sum.max() + dx],
+            #xaxis_range= [hedge_sum.min() - dx, hedge_sum.max() + dx],
             
             # Define width and height of the image
             width=80,height=1050,
