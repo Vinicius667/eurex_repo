@@ -781,7 +781,7 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
             yaxis = dict(
                 tickmode = 'array',
                 tickvals = HedgeBedarf_df.Basis[HedgeBedarf_df.index % 3 == 0],
-                ticktext = ['One', 'Three', 'Five', 'Seven', 'Nine', 'Eleven']
+                ticktext = HedgeBedarf_df.Basis[HedgeBedarf_df.index % 3 == 0]
             ),
             
             # Remove margins
