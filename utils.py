@@ -576,7 +576,7 @@ def parse_excel(auswahl : int, excel_path : str):
     return auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, nbd_dict, dict_prod_bus, stock_price, expiry, expiry_1, heute, list_email_send_selection, future_date_col
 
 def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_price, heute, nbd_dict, tage_bis_verfall, delta, expiry, expiry_1, file_path):
-
+    # raise()
     # Fifth stage
     # Values to create arrow
     idx_closest = (HedgeBedarf_df.Basis - stock_price).abs().idxmin()
