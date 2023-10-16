@@ -87,8 +87,6 @@ def next_business_day(input_datetime):
 
 
 
-
-
 def get_overview(auswahl, tries=10):
     print(f"################## Obtaining overview ##################")
     ## Download tradingDates and future_date_col
@@ -403,14 +401,11 @@ def hedge(auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, dict
     
     # Third stage
     SchrittWeite = 10
-
-
-
     Tage = tage_bis_verfall
     if Tage == 0:
         Tage = 0.5
 
-    Tage_1 = (expiry_1 - heute).days # ASK: Add 1?
+    Tage_1 = (expiry_1 - heute).days
 
     print(f"Tage = {Tage}")
     print(f"Tage_1 = {Tage_1}")
@@ -575,30 +570,47 @@ def parse_excel(auswahl : int, excel_path : str):
 
     return auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, nbd_dict, dict_prod_bus, stock_price, expiry, expiry_1, heute, list_email_send_selection, future_date_col
 
-def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_price, heute, nbd_dict, tage_bis_verfall, delta, expiry, expiry_1, file_path):
-    # raise()
+def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_price, heute, nbd_dict, tage_bis_verfall, delta, expiry, expiry_1):
+
     # Fifth stage
-    # Values to create arrow
-    idx_closest = (HedgeBedarf_df.Basis - stock_price).abs().idxmin()
-    closest_Basis =  HedgeBedarf_df.loc[idx_closest,"Basis"]
-    hedge_sum = HedgeBedarf_df.HedgeSum + HedgeBedarf1_df.HedgeSum
-    closest_Sum = hedge_sum.loc[idx_closest]
-
-    x_axis_length = hedge_sum.max() - hedge_sum.min()
-    y_axis_length = HedgeBedarf_df.Basis.max() - HedgeBedarf_df.Basis.min()
-
     min_Kontrakte = 5000
-    max_Differenz = 1000
     prozentual = 0.2
 
+
     dict_verfall_sufix= {
-        True : "_verfall",
-        False : ""
+        "detailed" : "_verfall",
+        "complete" : "",
+        "basic" : "_basic"
     }
 
-    is_close_verfall =  tage_bis_verfall < 5
-    for is_detailed in [False, True]:
-        if is_detailed:
+    # True if the expiry is close
+    is_close_verfall =  tage_bis_verfall < 5 
+
+    # Report format for which the images will be generated => images for complete report format are always generated
+    report_formats = ['complete']
+
+    # PDF formats => complete is always generated
+    pdf_formats = ['complete']
+
+    if auswahl == 0:
+        # Also generate images basic report format
+        report_formats.append('basic')
+
+        # Also generate basic report pdf format
+        pdf_formats.append('basic')
+
+    if is_close_verfall:
+        # Also generate images detailed report format. This is only done if the expiry is close
+        # These images have to be the last ones to be generated because the dataframes are clipped
+        # around the stock price. This requirment can be removed if we make a copy of the dataframes.
+        report_formats.append('detailed')
+
+
+    # Generate images for each report format
+    for report_format in report_formats:
+
+        if report_format == 'detailed':
+            ################## Select 10 values above and below the stock price ##################
             indexes = Summery_df.loc[(Summery_df.Basis >= stock_price)].tail(10).index.to_list() + Summery_df.loc[(Summery_df.Basis < stock_price)].head(10).index.to_list()
             Summery_df =  Summery_df.loc[indexes].reset_index(drop=True)
 
@@ -606,20 +618,43 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
             
             HedgeBedarf_df = HedgeBedarf_df.loc[indexes].reset_index(drop=True)
             HedgeBedarf1_df = HedgeBedarf1_df.loc[indexes].reset_index(drop=True)
+            
+            ######################################################################################
 
-        # (CF > min_Kontrakte) AND (PF > min_Kontrakte) AND (ABS(CF - PF)  < MIN(PF,CF)*)
-        mask_highlights = (
-            (Summery_df.openInterest_CF > min_Kontrakte) & 
-            (Summery_df.openInterest_PF > min_Kontrakte) & 
-            (
-                (Summery_df.openInterest_CF - Summery_df.openInterest_PF).abs() < 
-                (Summery_df[['openInterest_PF',"openInterest_CF"]].min(axis=1)*prozentual)))
 
+        # Closest index to the stock price
+        idx_closest = (HedgeBedarf_df.Basis - stock_price).abs().idxmin()
+
+        # Closest Basis to the stock price
+        closest_Basis =  HedgeBedarf_df.loc[idx_closest,"Basis"]
+
+        # Define w
+        if report_format == 'basic':
+            line_to_point = HedgeBedarf_df.HedgeSum
+            line_to_point_legend_name = expiry.strftime("%Y-%m") 
+        else:
+            # report_format == 'complete' or report_format == 'detailed
+            hedge_sum = HedgeBedarf_df.HedgeSum + HedgeBedarf1_df.HedgeSum
+            line_to_point = hedge_sum
+            line_to_point_legend_name = expiry.strftime("%Y-%m") + " + "+ expiry_1.strftime("%Y-%m")
+
+        # Where to point the arrow
+        value_to_point = line_to_point.loc[idx_closest]   
 
         ################################## Hilights for Basis column ####################################
 
         Summery_df["basis_color"] = "lavender"
-        if not is_detailed:
+        if report_format == 'complete':
+            # (CF > min_Kontrakte) AND (PF > min_Kontrakte) AND (ABS(CF - PF)  < MIN(PF,CF)*)
+            mask_highlights = (
+                (Summery_df.openInterest_CF > min_Kontrakte) & 
+                (Summery_df.openInterest_PF > min_Kontrakte) & 
+                (
+                    (Summery_df.openInterest_CF - Summery_df.openInterest_PF).abs() < 
+                    (Summery_df[['openInterest_PF',"openInterest_CF"]].min(axis=1)*prozentual))
+                )
+            
+            # Highlight the Basis
             Summery_df.loc[
                 mask_highlights, "basis_color"] = "yellow"
         col_basis_color = Summery_df.basis_color.to_numpy()
@@ -667,7 +702,7 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
         values_header = bold(["Basis","Änderung",nbd_dict['heute'].strftime("%d/%m/%y"),nbd_dict['last'].strftime("%d/%m/%y")])
 
 
-        if not  is_detailed:
+        if report_format == 'complete':
             values_body += [(Summery_df.openInterest_PF), (Summery_df.openInterest_CF)]
             values_header += bold(["Put","Call"])
 
@@ -686,7 +721,7 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
                         # Header style
                         fill_color='paleturquoise',
                             align='center',
-                            font = {'size': int(font_size*0.8)},
+                            font = {'size': 14},
                             height = row_height,
                     ),
 
@@ -717,12 +752,14 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
             margin=dict(l=0,r=0,b=0.0,t=0)
         )
 
-        fig.write_image(os.path.join(current_results_path,f'image_table{dict_verfall_sufix[is_detailed]}.svg'),scale=1)
+        fig.write_image(os.path.join(temp_results_path,f'image_table{dict_verfall_sufix[report_format]}.svg'),scale=1)
 
 
+        # Length x axis
+        x_axis_length = line_to_point.max() - line_to_point.min()
         data =  [
 
-            # Create 0  y axis
+            # This plot the 0 line
             go.Scatter(
                 x = [0,0], 
                 y = [HedgeBedarf_df.Basis.min(), HedgeBedarf_df.Basis.max()],
@@ -731,26 +768,34 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
                 showlegend = False
             ),
 
-            go.Scatter(
-                x = hedge_sum,
-                y = HedgeBedarf_df.Basis,
-                mode = "lines",
-                name =expiry.strftime("%Y-%m") + " + "+ expiry_1.strftime("%Y-%m"),
-                marker_color= "blue"
-            ),
 
-        go.Scatter(
-            x = [closest_Sum + x_axis_length/5,closest_Sum + x_axis_length/50], 
+            # This plot the arrow pointing to line_to_point
+            go.Scatter(
+            x = [value_to_point + x_axis_length/5,value_to_point + x_axis_length/50], 
             y = [closest_Basis,closest_Basis],
             marker= dict(size=20,symbol= "arrow-bar-up", angleref="previous"),
             marker_color = "red",
             showlegend = False
+        ),
+
+
+            go.Scatter(
+            x = line_to_point,
+            y = HedgeBedarf_df.Basis,
+            mode = "lines",
+            name = line_to_point_legend_name,
+            marker_color= "blue"
         )
+
         ]
-        
-        min_x_list = [hedge_sum.min()]
-        max_x_list = [hedge_sum.max()]
-        if not is_detailed:
+
+
+        # Define range for x axis
+        min_x_list = [line_to_point.min()]
+        max_x_list = [line_to_point.max()]
+
+        # If the report is complete, add the second line
+        if report_format == 'complete':
             min_x_list.append(HedgeBedarf1_df.HedgeSum.min())
             max_x_list.append(HedgeBedarf1_df.HedgeSum.max())
             data += [
@@ -764,13 +809,11 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
             ]
 
         ##################################################################################################
-        dx =  0.1*(hedge_sum.max() - hedge_sum.min())
 
-
+        # Margin to the x axis
+        dx =  0.2*(hedge_sum.max() - hedge_sum.min())
 
         fig = go.Figure(data=data)
-
-        #mask = HedgeBedarf_df.index % round(HedgeBedarf_df.shape[0]/40) == 0
         fig.update_layout(
             margin=dict(l=0,r=0,b=0.1,t=row_height),
             # Set limits in the x and y axis
@@ -805,13 +848,13 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
         )
 
 
-        fig.write_image(os.path.join(current_results_path,f'image_graph{dict_verfall_sufix[is_detailed]}.svg'),scale=1)
+        fig.write_image(os.path.join(temp_results_path,f'image_graph{dict_verfall_sufix[report_format]}.svg'),scale=1)
 
 
 
         fig = go.Figure()
 
-        if not is_detailed:
+        if report_format == 'complete':
             fig.add_trace(
                 trace = go.Bar(name='Put', y=Summery_df.Basis, x=-Summery_df.openInterest_PF,orientation='h', marker_color = 'rgb(40, 164, 40)'),
             )
@@ -843,48 +886,9 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
         fig.update_xaxes(visible=False)
         fig.update_yaxes(visible=False)
 
-        fig.write_image(os.path.join(current_results_path,f'image_bar{dict_verfall_sufix[is_detailed]}.svg'),scale=1)
+        fig.write_image(os.path.join(temp_results_path,f'image_bar{dict_verfall_sufix[report_format]}.svg'),scale=1)
 
 
-        with open(src_html) as file:
-            template = file.read()
-
-        if not is_close_verfall:
-            subst = ""
-            regex = r"\$BEGIN_DETAIL\$.*\$END_DETAIL\$"
-            template = re.sub(regex, subst, template, 0, re.MULTILINE | re.DOTALL)
-        else:
-            template = template.replace("$BEGIN_DETAIL$", "").replace("$END_DETAIL$", "")
-
-        dict_title = {
-            0 : "OpenInterest und HedgeBedarf",
-            1 : "STOXX 50 OpenInterest und HedgeBedarf",
-        }
-
-        # Replace specific characters in the template by values
-        dict_raplace = {
-            "$PUT_SUM$": int(Summery_df.openInterest_PF.sum()),
-            "$CALL_SUM$": int(Summery_df.openInterest_CF.sum()),
-            "$TBF$": tage_bis_verfall,
-            "$DELTA$":str(delta).replace(".",","),
-            "$DATE$": heute.strftime("%d/%m/%Y"),
-            "$FRONT_DATE$" : expiry.strftime("%Y-%m"),
-            "$TITLE$" : dict_title[auswahl],
-            "$HEADER_COLOR$" : "background-color: rgb(12, 89, 177)"
-        }
-
-        for key, value in dict_raplace.items():
-            template = template.replace(key, str(value))
-
-
-        result_html = {True:summery_html, False: summery_verfall_html}[is_detailed]
-
-        # Export html file
-        with open(result_html,'w') as file:
-            file.write(template)
-
-        # Results files
-        
     dict_auswahl_colors = {
         0 : {"$HEADER_COLOR$":"", "$FUTURE_COLOR$":"background-color: rgb(0, 174, 255);","$FONT_COLOR$":"color: black;"},
         1 : {"$HEADER_COLOR$":"background-color: rgb(12, 89, 177);", "$FUTURE_COLOR$":"", "$FONT_COLOR$" : "color: white;"},
@@ -899,7 +903,75 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
     with open(result_css,'w') as file:
         file.write(css_file)
 
-    converter.convert("file://" + os.path.join(os.getcwd(),result_html), file_path)
-    #shutil.copyfile(list_pdf_files[0], list_pdf_files[1])
-    
-    print("PDF has been generated.")
+
+    dict_html_sections = {
+        "complete_report" : "COMPLETE_REPORT", 
+        "detailed_report": "DETAIL",
+        "basic_report"   : "BASIC",
+        "after_report"   : "AFTER_REPORT"
+    }
+
+
+    dict_title = {
+        0 : "OpenInterest und HedgeBedarf",
+        1 : "STOXX 50 OpenInterest und HedgeBedarf",
+    }
+
+    # Replace specific characters in the template by values
+    dict_raplace = {
+        "$DATE$": heute.strftime("%d/%m/%Y"),
+        "$PUT_SUM$": int(Summery_df.openInterest_PF.sum()),
+        "$CALL_SUM$": int(Summery_df.openInterest_CF.sum()),
+        "$TBF$": tage_bis_verfall,
+        "$DELTA$":str(delta).replace(".",","),
+        "$FRONT_DATE$" : expiry.strftime("%Y-%m"),
+        "$TITLE$" : dict_title[auswahl],
+        "$HEADER_COLOR$" : "background-color: rgb(12, 89, 177)"
+    }
+
+    with open(src_html) as file:
+        template_original = file.read()
+
+    template_replaced_values = template_original
+
+
+    for key, value in dict_raplace.items():
+        template_replaced_values = template_replaced_values.replace(key, str(value))
+
+
+
+    for pdf_format in pdf_formats:
+        template = template_replaced_values
+        if pdf_format == "basic":
+            maintain_html_list = ["basic_report"]
+
+        elif pdf_format == "complete":
+            maintain_html_list = ["complete_report", "after_report"]
+            if is_close_verfall:
+                maintain_html_list.append("detailed_report")
+
+
+
+        for html_section, html_section_name in dict_html_sections.items():
+            if html_section in maintain_html_list:
+                template = template.replace(f"$BEGIN_{html_section_name}$", "").replace(f"$END_{html_section_name}$", "")
+            else:
+                subst = ""
+                regex = f"\$BEGIN_{html_section_name}\$.*\$END_{html_section_name}\$"
+                template = re.sub(regex, subst, template, 0, re.MULTILINE | re.DOTALL)
+        
+
+        result_html = os.path.join(temp_results_path,"output.html")
+
+
+        # Export html file
+        with open(result_html,'w') as file:
+            file.write(template)
+
+
+        pdf_suffix = {"complete":"", "basic":"_basic"}[pdf_format]
+        file_path = os.path.join(current_results_path, f"{dict_index_stock[auswahl]}_{heute.strftime('%d_%m_%Y')}{pdf_suffix}.pdf")
+
+        converter.convert("file://" + os.path.join(os.getcwd(),result_html), file_path)
+
+        print("PDF has been generated.")

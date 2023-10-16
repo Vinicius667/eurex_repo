@@ -10,3 +10,11 @@ For DAX:
 
 
 Make PDFs match
+
+
+
+Generate 3 PDFs
+
+	- Two are already generated 
+
+	- Reduced one: withou PUT and CALL and bar graph, if possible, only one contract on the graph => the current one (not the sum)

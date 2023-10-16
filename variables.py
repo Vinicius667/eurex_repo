@@ -6,8 +6,6 @@ import json
 save_files_to_debug = True
 
 
-
-
 def get_default_values(auswahl):
     if auswahl == 0: # DAX
         return dict(
@@ -61,8 +59,10 @@ with open(list_creditials_path) as file:
     list_credentials = json.load(file)['credentials']
 
 
-summery_html = os.path.join(current_results_path,"summery.html")
-summery_verfall_html = os.path.join(current_results_path,"summery_verfall.html")
-result_css = os.path.join(current_results_path,"style.css")
-result_image = os.path.join(current_results_path,"image.svg")
+summery_html = os.path.join(temp_results_path,"summery.html")
+summery_verfall_html = os.path.join(temp_results_path,"summery_verfall.html")
+summery_basic_html = os.path.join(temp_results_path,"summery_basic.html")
+
+result_css = os.path.join(temp_results_path,"style.css")
+result_image = os.path.join(temp_results_path,"image.svg")
 

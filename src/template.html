@@ -7,6 +7,7 @@
 		<title>EUREX</title>
 		<link rel="stylesheet" href="./style.css">
 	</head>
+	$BEGIN_COMPLETE_REPORT$
 	<body>
 		<main>
 			<div class = "header">
@@ -95,6 +96,7 @@
 					</div>
 				</div>
 			</div>
+			$END_COMPLETE_REPORT$
 			$BEGIN_DETAIL$
 			<div class = "header">
 				<div class ="text_and_date">
@@ -130,7 +132,7 @@
 					</div>
 				</div>
 				<div class = "graph_header">
-					<div class = "front_date"> Front: 2023-09</div>
+					<div class = "front_date"> Front: $FRONT_DATE$</div>
 					<div class = "hedge_info"> Änderung des Hedgebedarfs für den
 						Frontmonat (Kontrakte/P, Abschätzung)
 						Faktor:50% (des theoretischen Wertes)
@@ -170,6 +172,83 @@
 				</div>
 			</div>
 			$END_DETAIL$
+
+			$BEGIN_BASIC$
+			<div class = "header">
+				<div class ="text_and_date">
+				    <div class = "big_small_text">
+						<div class = "bigger_text">
+							$TITLE$
+						</div>
+						<div class = "smaller_text">
+							basierend auf Daten von der EUREX <br>
+							(http://www.eurexchange.com/exchange-de/disclaimer)
+						</div>
+					</div>
+					<div class ="date">
+						$DATE$
+					</div>
+				</div>
+				<div class = "tage_delta">
+					<div class = "tage">
+						<div class = "tage_text">Tage bis Verfall</div>
+						<div class = "tage_value">$TBF$</div>
+					</div>
+					<div class = "delta">
+						<div class = "delta_text">Delta</div>
+						<div class = "delta_value">$DELTA$</div>
+					</div>
+				</div>
+				<div class = "big_small_text" id = "future">
+					<div class = "bigger_text">
+						Future-Hedgebedarf für Überhänge der Optionen
+					</div>
+					<div class = "smaller_text">
+						(Überhang/5)*delta
+					</div>
+				</div>
+				<div class = "graph_header">
+					<div class = "front_date"> Front: $FRONT_DATE$</div>
+					<div class = "hedge_info"> Änderung des Hedgebedarfs für den
+						Frontmonat (Kontrakte/P, Abschätzung)
+						Faktor:50% (des theoretischen Wertes)
+					</div>
+				</div>
+			</div>
+			<div class = "data_images">
+				<div class = "table_bar">
+					<div class = "svg_image">
+						<img src="image_table_basic.svg" style="height: 800px">
+					</div>
+					<div class = "svg_image2">
+						<img src="image_bar_basic.svg" style="height: 800px">
+					</div>
+				</div>
+				<div class = "svg_image3">
+					<img src="image_graph_basic.svg" style="height: 813px">
+				</div>
+			</div>
+			<div class="bellow_image">
+				<div class="legend_info_name">
+					<div class="legend_info">
+						<div class="legend">
+							<div class="legend1_verfall">
+								<div class="gamma_verfall" id = "gamma_long">Gamma long (Put long Überhänge)</div>
+								<div class="gamma_verfall" id = "gamma_short">Gamma short (Call short Überhänge)</div>
+							</div>
+						</div>
+						<div class="info">
+							* Nur Front-Monat betrachtet für den aktuellen und den letzten Handelstag
+						</div>
+					</div>
+					<div class="name">
+						<br>
+						© Detlef Dieball
+					</div>
+				</div>
+			</div>
+			$END_BASIC$
+			$BEGIN_AFTER_REPORT$
 			<div id = "preise">
 				<b>Preise</b>  <br><br><br>
 				<div  style="color: blue">Options-Analysen:</div> 
@@ -314,7 +393,7 @@
 					Bei jeder Marktbewegung muss der Theta-Gamma Optionshändler hedgen - in Bewegungsrichtung => der Markt wird hektisch
 				</div>
 			</div>
-		
+			$END_AFTER_REPORT$
 		</main>
 	</body>
 </html>
