@@ -11,15 +11,17 @@ from variables import *
 from bs4 import BeautifulSoup
 import re
 from scipy.stats import norm
-from utils import *
 import re
 import plotly.graph_objects as go
 from pyhtml2pdf import  converter
 from plotly.colors import n_colors
 from bs4 import BeautifulSoup
 from pytz import timezone    
-
-
+import time
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 def create_folder(path):
     # Create a foder in case it has not been created already
@@ -89,7 +91,7 @@ def next_business_day(input_datetime):
 
 def get_overview(auswahl, tries=10):
     print(f"################## Obtaining overview ##################")
-    ## Download tradingDates and future_date_col
+    ## Download tradingDates and contract_dates
     if auswahl == 1:
     # STOXX
         url = 'https://www.eurex.com/api/v1/overallstatistics/69660'
@@ -128,7 +130,7 @@ def get_overview(auswahl, tries=10):
                 overview_df = pd.DataFrame(response.json()['dataRows'])
                 overview_df = overview_df[overview_df.contractType == 'M']
                 overview_df.sort_values('date',ignore_index=True,inplace=True)
-                future_date_col = overview_df.loc[:,'date']
+                contract_dates = overview_df.loc[:,'date']
                 overview_df.date = pd.to_datetime(overview_df.date,format='%Y%m%d').dt.strftime('%d-%m-%Y')
 
             else:
@@ -142,23 +144,27 @@ def get_overview(auswahl, tries=10):
         except:
             continue
             
-    return url, headers, tradingDates, future_date_col, overview_df
+    return url, headers, tradingDates, contract_dates, overview_df
 
 
-def get_contracts(heute, url, headers, tradingDates, future_date_col,tries=10):
+def get_contracts(heute, url, headers, tradingDates, contract_dates,tries=10):
     #https://en.wikipedia.org/wiki/Offset_(computer_science)#
     offset = 0
     # **tbd: heute shall be a working day (Mo - Fr)**
-    expiry = datetime.strptime(future_date_col[0],"%Y%m%d")
-    expiry_1 = datetime.strptime(future_date_col[1],"%Y%m%d")
+
+    # busdate = trading_date 
+    # future_date = contract_date
+
+    expiry = datetime.strptime(contract_dates[0],"%Y%m%d")
+    expiry_1 = datetime.strptime(contract_dates[1],"%Y%m%d")
 
     tage_bis_verfall = (expiry - heute).days
     
     if tage_bis_verfall < 0:
         offset = 1
 
-    expiry = datetime.strptime(future_date_col[0 + offset],"%Y%m%d")
-    expiry_1 = datetime.strptime(future_date_col[1 + offset],"%Y%m%d") 
+    expiry = datetime.strptime(contract_dates[0 + offset],"%Y%m%d")
+    expiry_1 = datetime.strptime(contract_dates[1 + offset],"%Y%m%d") 
     tage_bis_verfall = (expiry - heute).days +1
 
     print(f"################## Obtaining contracts ##################")
@@ -168,7 +174,7 @@ def get_contracts(heute, url, headers, tradingDates, future_date_col,tries=10):
     dict_prod_bus = {}
     for productdate_idx in [0,1]:
         dict_prod_bus[productdate_idx] = {}
-        params_details['productdate'] = future_date_col[productdate_idx + offset]
+        params_details['productdate'] = contract_dates[productdate_idx + offset]
         for busdate_idx in [0,1]:
             params_details['busdate'] = f"{tradingDates[busdate_idx].strftime('%Y%m%d')}" 
             for i in range(tries):
@@ -228,17 +234,20 @@ def get_euribor_3m()->float:
     return float(euribor_row["InterestRate"].replace("%",""))/100
 
 def get_finazen_price(stock_idx)->float:
+    #options = Options()
+    #options.add_argument("--window-size=1366,768")
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))#, options=options)
+
     dict_stock_names = {
     0 : 'vdax-new-2m',
     1 : 'vstoxx'
     }
     stock = dict_stock_names[stock_idx]
-    #accepted values for stock: , 
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'
-    }
-    response = requests.get('https://www.finanzen.net/index/' + stock, headers=headers)
-    html = BeautifulSoup(response.content, 'html.parser')
+    url = 'https://www.finanzen.net/index/' + stock
+    driver.get(url)
+    #time.sleep(5)
+    html = BeautifulSoup(driver.page_source, 'html.parser')
+    driver.quit()
     aux = BeautifulSoup.findAll(html,id = 'snapshot-value-fst-current-0')[0].span.get_text()
     price = re.findall(r'\d{0,},\d{0,}',aux)[0]
     price = float(price.replace(',','.'))
@@ -263,6 +272,7 @@ def parse_eurex(auswahl, heute = None):
     auswahl: Option defined by the user. See variables.dict_index_stock.
     heute: it should be a date as string using dd/mm/yyyy format. If None, it will be defined by get_heute().
     """
+    volatility = get_finazen_price(auswahl)/100
 
     if not heute:
         heute = get_heute()
@@ -272,8 +282,8 @@ def parse_eurex(auswahl, heute = None):
     print(f"heute = {heute}")
 
     # First stage
-    url, headers, tradingDates, future_date_col, overview_df = get_overview(auswahl)
-    dict_prod_bus, expiry, expiry_1, tage_bis_verfall =  get_contracts(heute, url, headers, tradingDates, future_date_col)
+    url, headers, tradingDates, contract_dates, overview_df = get_overview(auswahl)
+    dict_prod_bus, expiry, expiry_1, tage_bis_verfall =  get_contracts(heute, url, headers, tradingDates, contract_dates)
     
     list_email_send_selection  = is_calculation_needed(auswahl, tage_bis_verfall)
 
@@ -301,7 +311,7 @@ def parse_eurex(auswahl, heute = None):
     nbd_dict = {'heute' : nbd_heute, 'last' : nbd_last}
 
     InterestRate = get_euribor_3m()
-    volatility = get_finazen_price(auswahl)/100
+    
 
     print(f'heute = {heute.strftime("%d/%m/%Y")}')
     print(f"tage_bis_verfall = {tage_bis_verfall}")
@@ -312,7 +322,7 @@ def parse_eurex(auswahl, heute = None):
     print(f"volatility = {volatility}")
     print(f"InterestRate = {InterestRate}")
 
-    return auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, nbd_dict, dict_prod_bus, stock_price, expiry, expiry_1, heute, list_email_send_selection, future_date_col
+    return auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, nbd_dict, dict_prod_bus, stock_price, expiry, expiry_1, heute, list_email_send_selection, contract_dates
 
 def hedge(auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, dict_prod_bus, stock_price, expiry, expiry_1, heute, export_excel = False):
 
@@ -515,7 +525,7 @@ def parse_excel(auswahl : int, excel_path : str):
     ZentralKurs =  Ueberhaenge_sheet.cell(*coordinate_to_tuple("C3")).value  
     volatility = Ueberhaenge_sheet.cell(*coordinate_to_tuple("N4")).value
 
-    future_date_col = [expiry, expiry_1]
+    contract_dates = [expiry, expiry_1]
 
     Summery_sheet = wb[f'{dict_auswahl_prefix[auswahl]}Summery']
     nbd_heute = Summery_sheet.cell(*coordinate_to_tuple("C9")).value
@@ -568,7 +578,7 @@ def parse_excel(auswahl : int, excel_path : str):
     print(f"volatility = {volatility}")
     print(f"InterestRate = {InterestRate}")
 
-    return auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, nbd_dict, dict_prod_bus, stock_price, expiry, expiry_1, heute, list_email_send_selection, future_date_col
+    return auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, nbd_dict, dict_prod_bus, stock_price, expiry, expiry_1, heute, list_email_send_selection, contract_dates
 
 def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_price, heute, nbd_dict, tage_bis_verfall, delta, expiry, expiry_1):
 
@@ -943,12 +953,14 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
     for pdf_format in pdf_formats:
         template = template_replaced_values
         if pdf_format == "basic":
-            maintain_html_list = ["basic_report"]
+            maintain_html_list = ["basic_report","after_report"]
 
         elif pdf_format == "complete":
             maintain_html_list = ["complete_report", "after_report"]
-            if is_close_verfall:
-                maintain_html_list.append("detailed_report")
+        
+        
+        if is_close_verfall:
+            maintain_html_list.append("detailed_report")
 
 
 
