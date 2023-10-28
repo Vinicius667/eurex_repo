@@ -153,7 +153,7 @@ def get_contracts(heute, url, headers, tradingDates, contract_dates,tries=10):
     # **tbd: heute shall be a working day (Mo - Fr)**
 
     # busdate = trading_date 
-    # future_date = contract_date
+    # product_date = contract_date
 
     expiry = datetime.strptime(contract_dates[0],"%Y%m%d")
     expiry_1 = datetime.strptime(contract_dates[1],"%Y%m%d")
@@ -192,7 +192,6 @@ def get_contracts(heute, url, headers, tradingDates, contract_dates,tries=10):
                     contractsPut_aux_df =  pd.DataFrame(response.json()['dataRowsPut'])
                     
                     # Create dataframe with the just requested data
-
                     aux_df = contractsCall_aux_df[['strike','openInterest']].merge(
                         contractsPut_aux_df[['strike','openInterest']],
                         on = "strike",
@@ -200,6 +199,9 @@ def get_contracts(heute, url, headers, tradingDates, contract_dates,tries=10):
                         suffixes=('_CF', '_PF')
                     )
                     dict_prod_bus[productdate_idx][busdate_idx] = aux_df
+
+
+                    pass
                 except:
                     continue
                 break
@@ -234,8 +236,8 @@ def get_euribor_3m()->float:
     return float(euribor_row["InterestRate"].replace("%",""))/100
 
 def get_finazen_price(stock_idx)->float:
-    #options = Options()
-    #options.add_argument("--window-size=1366,768")
+    #options = webdriver.ChromeOptions()
+    #options.add_argument("headless")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))#, options=options)
 
     dict_stock_names = {
@@ -379,6 +381,8 @@ def hedge(auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, dict
             )
 
             if productdate_idx == 0:
+                # busdate_idx == 0 -> Front
+                # busdate_idx == 1 -> Last
                 Ueberhaenge_df[busdate_idx] = aux_df.openInterest_PF - aux_df.openInterest_CF
 
                 if busdate_idx == 0:
@@ -387,7 +391,7 @@ def hedge(auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, dict
             
             elif productdate_idx == 1:
                 if busdate_idx == 0:
-                    Ueberhaenge_df["nextContract"] = -(aux_df.openInterest_PF - aux_df.openInterest_CF)
+                    Ueberhaenge_df["nextContract"] = (aux_df.openInterest_PF - aux_df.openInterest_CF)
                     Summery_df["nextContract"] = Ueberhaenge_df["nextContract"]
 
 
@@ -408,7 +412,8 @@ def hedge(auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, dict
         Summery_df['nextContract'] =  Summery_df['nextContract'] / 2
     
     SummeryDetail_df = Summery_df[(Summery_df.Basis >= DetailMin) & (Summery_df.Basis < (DetailMax + Schritt))]
-    
+
+
     # Third stage
     SchrittWeite = 10
     Tage = tage_bis_verfall
@@ -428,6 +433,7 @@ def hedge(auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, dict
     HedgeBedarf_values = np.zeros(Hedge_dimensions)
     HedgeBedarf1_values = np.zeros(Hedge_dimensions)
 
+    #Ueberhaenge_df.fillna(0,inplace=True)
 
     for k in range(Hedge_dimensions[1]):
         Basis_value = Basis[k]
@@ -456,6 +462,8 @@ def hedge(auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, dict
 
             if Kurs == 17000:
                 continue
+
+    
     HedgeSum = HedgeBedarf_values.sum(axis=1)/2
     HedgeSum_1 = HedgeBedarf1_values.sum(axis=1)/2
 
@@ -505,8 +513,12 @@ def hedge(auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, dict
                 HedgeBedarf1_df.to_excel(writer,sheet_name='HedgeBedarf+01',index=False)
                 
         print("Excel files have been exported.")
-
-    return Summery_df, HedgeBedarf_df, HedgeBedarf1_df, Ueberhaenge_df, delta
+    return (
+    Summery_df,#.dropna(ignore_index = True), 
+    HedgeBedarf_df,#.dropna(ignore_index = True), 
+    HedgeBedarf1_df,#.dropna(ignore_index = True), 
+    Ueberhaenge_df,#.dropna(ignore_index = True), 
+    delta)
 
 def parse_excel(auswahl : int, excel_path : str):
 
@@ -581,6 +593,10 @@ def parse_excel(auswahl : int, excel_path : str):
     return auswahl, ZentralKurs, volatility, InterestRate, tage_bis_verfall, nbd_dict, dict_prod_bus, stock_price, expiry, expiry_1, heute, list_email_send_selection, contract_dates
 
 def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_price, heute, nbd_dict, tage_bis_verfall, delta, expiry, expiry_1):
+    # Drop rows with NaN values
+    Summery_df.dropna(ignore_index=True, inplace=True)
+    HedgeBedarf_df.dropna(ignore_index=True, inplace=True)
+    HedgeBedarf1_df.dropna(ignore_index=True, inplace=True)
 
     # Fifth stage
     min_Kontrakte = 5000

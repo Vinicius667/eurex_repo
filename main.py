@@ -13,7 +13,7 @@ list_folder_results =  [current_results_path, old_results_path, temp_results_pat
 for folder in list_folder_results:
     create_folder(folder)
 
-for auswahl in [1,0]:
+for auswahl in [0,1]:
     # Get result from parse_eurex function 
     result = parse_eurex(auswahl, heute = heute_input)
 
