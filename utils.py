@@ -718,8 +718,8 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
         row_height_percent =  (row_height/height)
 
 
-        values_body = [
-                    (Summery_df.Basis +1e-6).round(0).astype(int),
+        values_body = [  
+                    "<b>" + (Summery_df.Basis +1e-6).round(0).astype(int).astype(str) + "</b>",
                     (Summery_df.Änderung +1e-6).round(0).astype(int),
                     (Summery_df.heute +1e-6).round(0).astype(int),
                     (Summery_df.last_day +1e-6).round(0).astype(int),
