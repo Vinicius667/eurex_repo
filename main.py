@@ -45,14 +45,14 @@ for email in list_emails:
             # File to be sent
             file_path = os.path.join(current_results_path, f"{email['index']}_{heute.strftime('%d_%m_%Y')}.pdf")
             print(f"{email['mailto']}: {file_path}")
-           # send_mail_outlook(
-            #    outlook = outlook,
-            #    send_from = email['from'],
-            #    send_to = email['mailto'],
-            #    subject = email['subject'],
-            #    body = open(os.path.join(email_messages_path,email['text']),encoding="UTF-8").read(),
-            #    attachments = [
-            #            file_path
-            #                        ],
-            #)
+            send_mail_outlook(
+                outlook = outlook,
+                send_from = email['from'],
+                send_to = email['mailto'],
+                subject = email['subject'],
+                body = "\n".join([open(os.path.join(email_messages_path,text),encoding="UTF-8").read() for text in email['text']]),
+                attachments = [
+                        file_path
+                                    ],
+            )
             print(f"{email['from']}: File was sent.")

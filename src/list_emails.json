@@ -1,43 +1,51 @@
 {
-    "emails": [THIS TEXT PREVENTS THIS FILE FROM BE USED ACCIDENTALLY
+    "emails": [
         {            
         "from" : "info@dieball.de",
-        "mailto" : ["dax-trader@t-online.de"],
+        "mailto" : ["detlefd@gmx.net"],
         "subject" : "OI-Tabelle",
-        "text" : "dax-trader.txt",
-        "condition_to_send": "always"
+        "text" : ["dax-trader.txt", "PS.txt"],
+        "condition": "always",
+        "id" : 1,
+        "index" : "DAX"
     },
     {
         "from" : "detlefd@gmx.net",
-        "mailto" : [
-            "egialouris@minotauruscapital.com", "alexmais04@gmail.com",
-            "alexmais04@gmail.com", "plika@minotauruscapital.com"
-        ],
+        "mailto" : ["detlefd@gmx.net"],
         "subject" : "OI-Tabelle",
-        "text" : "minotaurus_capital.txt",
-        "condition_to_send": "always"
+        "text" : ["minotaurus_capital.txt", "PS.txt"],
+        "condition": "always",
+        "id" : 2,
+        "index" : "DAX"
     },
     {
         "from" : "info@dieball.de",
-        "mailto" : ["tobias_marciniak@web.de"],
+        "mailto" : ["detlefd@gmx.net"],
         "subject" : "OI-Tabelle",
-        "text" : "tobias.txt",
-        "condition_to_send": "always"
+        "text" : ["tobias.txt", "PS.txt"],
+        "condition": "always",
+        "id" : 3,
+        "index" : "DAX"
     },
 
     {
         "from" : "info@dieball.de",
-        "mailto" : ["anh.tranquoc@gmx.de"],
+        "mailto" : ["detlefd@gmx.net"],
         "subject" : "STOXX_OI-Tabelle",
-        "text" : "anh_tranquoc.txt",
-        "condition_to_send": "tage_bis_verfall<=5"
+        "text" : ["anh_tranquoc.txt", "PS.txt"],
+        "condition": "tage_bis_verfall<=5",
+        "id" : 4,
+        
+        "index" : "STOXX"
     },
     {
         "from" : "info@dieball.de",
-        "mailto" : ["kid-trading@gmx.de"],
+        "mailto" : ["detlefd@gmx.net"],
         "subject" : "OI-Tabelle",
-        "text" : "kid_trading.txt",
-        "condition_to_send": "always"
+        "text" : ["kid_trading.txt", "PS.txt"],
+        "condition": "always",
+        "id" : 5,
+        "index" : "DAX"
         }
     ]
 }
