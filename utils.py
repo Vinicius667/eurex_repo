@@ -709,13 +709,17 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
             20, colortype='rgb'))[scale_col_range(Summery_df.openInterest_CF,19)]
         #################################################################################################
 
-        num_rows = Summery_df.shape[0]+1
-        height = 1050 #row_height*42
-        row_height = int(height/(num_rows))
+        num_rows = Summery_df.shape[0] # Not including the header
+        header_height =  20 # Minimum height of the header
+        height = 1050
+        row_height = (height - header_height )//(num_rows)
 
         # width of the image
         widht = 1000
-        row_height_percent =  (row_height/height)
+        
+        header_height += height - header_height - row_height*num_rows # Adjust the header height to fit the image height
+
+        print(header_height + row_height*num_rows, height)
 
 
         values_body = [  
@@ -747,15 +751,15 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
                         # Header style
                         fill_color='paleturquoise',
                             align='center',
-                            font = {'size': 14},
-                            height = row_height,
+                            font = {'size': 9},
+                            height = header_height,
                     ),
 
                     cells=dict(
 
                         align='center',
                         height = row_height,
-                        font = {'size': font_size,},
+                        font = {'size': [font_size - 3] + [font_size for i in range(len(values_header) - 1)]},
 
                         # Values of the table
                         values= values_body,
@@ -841,7 +845,7 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
 
         fig = go.Figure(data=data)
         fig.update_layout(
-            margin=dict(l=0,r=0,b=0.1,t=row_height),
+            margin=dict(l=0,r=0,b=row_height//2 + 300//row_height,t=header_height + row_height//2),
             # Set limits in the x and y axis
             yaxis_range= [HedgeBedarf_df.Basis.min(), HedgeBedarf_df.Basis.max()],
             xaxis_range= [min(min_x_list) - dx, max(max_x_list) + dx],
@@ -894,7 +898,7 @@ def generate_pdfs(auswahl, Summery_df, HedgeBedarf_df, HedgeBedarf1_df, stock_pr
         fig.update_layout(
             #barmode='stack', 
             barmode='overlay', 
-            margin=dict(l=0,r=0,b=0.1,t=row_height),
+            margin=dict(l=0,r=0,b=0,t=header_height),
             # Set limits in the x and y axis
             #yaxis_range= [HedgeBedarf_df.Basis.min(), HedgeBedarf_df.Basis.max()],
             #xaxis_range= [hedge_sum.min() - dx, hedge_sum.max() + dx],
